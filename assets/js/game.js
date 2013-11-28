@@ -105,6 +105,9 @@ Game.Construct = function()
     }
 
     function gDrawCookie() {
+        if (Game.BigCookieState==1) Game.BigCookieSize+=(0.98-Game.BigCookieSize)*0.5;
+        else if (Game.BigCookieState==2) Game.BigCookieSize+=(1.05-Game.BigCookieSize)*0.5;
+        else Game.BigCookieSize+=(1-Game.BigCookieSize)*0.5;
         Game.LeftBackground.clearRect(0,0,Game.LeftBackground.canvas.width,Game.LeftBackground.canvas.height);
         Game.targetX=Math.floor(Game.LeftBackground.canvas.width/2);
         Game.targetY=Math.floor(Game.LeftBackground.canvas.height*0.4);

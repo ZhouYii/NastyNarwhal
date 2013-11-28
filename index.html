@@ -6,16 +6,19 @@
     <link href="assets/css/styles.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" charset="utf-8" src="assets/js/seedrandom.js"></script>
     <script type="text/javascript" charset="utf-8" src="assets/js/lib.js"></script>
+    <script type="text/javascript" charset="utf-8" src="assets/js/game.js"></script>
     <script type="text/javascript" charset="utf-8" src="assets/js/main.js"></script>
 </head>
 <body>
     <div id="wrapper">
         <div id="game">
+            <canvas id="backgroundCanvas"></canvas>
             <div id="no-js">
                 Enable javascript to play this fun game!
             </div>
 
             <div id="sectionLeft" class="inset">
+                <canvas id="backgroundLeftCanvas" style="z-index:5;"></canvas>
                 <div class="blackFiller"></div>
                 <div class="blackGradient"></div>
                 <div id="sectionLeftInfo"></div>

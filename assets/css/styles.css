@@ -176,6 +176,7 @@ html,body
 
 #game.onMenu #menu{display:block;}
 #game.onMenu .row{display:none;}
+
 #menu
 {
 	display:none;
@@ -199,14 +200,17 @@ html,body
 	height:64px;
 	overflow:hidden;
 }
+
 #commentsText
 {
 	padding:0px 64px;
 }
+
 .commentsText q
 {
 	font-style:italic;
 }
+
 .commentsText sig
 {
 	font-size:70%;
@@ -214,6 +218,7 @@ html,body
 	text-align:center;
 	opacity:0.7;
 }
+
 .commentsText sig:before
 {
 	content:"-";
@@ -248,6 +253,7 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
+
 #backgroundCanvas,#backgroundLeftCanvas
 {
 	position:absolute;
@@ -278,4 +284,37 @@ time, mark, audio, video {
 	text-shadow:0px 0px 4px #000;
 	font-size: 28px;
 	color:white;
+
+#cookieAnchor
+{
+	position:absolute;
+	left:50%;
+	top:40%;
+}
+
+#bigCookie
+{
+	width:256px;
+	height:256px;
+	position:absolute;
+	left:-128px;
+	top:-128px;
+	/*background:url(img/perfectCookie.png);
+	background-size:256px 256px;*/
+	background:url(../img/empty.png);/* somehow necessary; an empty div with no background seems to be click-through */
+	cursor:pointer;
+	z-index:10000;
+}
+
+#currency
+{
+	position:absolute;
+	left:0px;
+	top:15%;
+	width:100%;
+	text-align:center;
+	z-index:200;
+	background:#000;
+	background:rgba(0,0,0,0.4);
+	padding:2px 0px;
 }

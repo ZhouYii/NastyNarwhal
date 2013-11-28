@@ -23,6 +23,7 @@ Game.Construct = function()
     Game.BigCookieSize = 0;
     Game.clicks = 0;
     Game.recalculateEarnRate = 1;
+
     gLoad();
     gLoadAssets();
     /* Set listeners for the click target */
@@ -38,6 +39,7 @@ Game.Construct = function()
         AddEvent(bigCookie,'mouseover',function(event){Game.BigCookieState=2;});
         AddEvent(document,'mousemove', gGetMouseCoords);
     }
+
     function gEarn (amt) {Game.totalEarnings += amt; Game.currency += amt;};
     function gLoadAssets () {
         Game.assets = {};

@@ -10,7 +10,7 @@ Game.Construct = function()
     /* Game Variables */
     Game.currency = 0;
     Game.time=new Date().getTime();
-
+    gMain();
     function gAddCurrency (amt) {Game.currency += amt;};
     function gLoadAssets () {
         Game.assets = {};
@@ -31,15 +31,15 @@ Game.Construct = function()
         {
             console.log("hi");
             Game.Background=get('backgroundCanvas').getContext('2d');
-            Game.Background.canvas.width=Game.Background.canvas.parentNode.offsetWidth;
-            Game.Background.canvas.height=screen.height;//Game.Background.canvas.parentNode.offsetHeight;
+            Game.Background.canvas.width=screen.width;
+            Game.Background.canvas.height=screen.height;
             Game.LeftBackground=get('backgroundLeftCanvas').getContext('2d');
             Game.LeftBackground.canvas.width=Game.LeftBackground.canvas.parentNode.offsetWidth;
             Game.LeftBackground.canvas.height=Game.LeftBackground.canvas.parentNode.offsetHeight;
             window.addEventListener('resize', function(event)
             {
-                Game.Background.canvas.width=Game.Background.canvas.parentNode.offsetWidth;
-                Game.Background.canvas.height=Game.Background.canvas.parentNode.offsetHeight;
+                Game.Background.canvas.width=screen.width;
+                Game.Background.canvas.height=screen.height;
                 Game.LeftBackground.canvas.width=Game.LeftBackground.canvas.parentNode.offsetWidth;
                 Game.LeftBackground.canvas.height=Game.LeftBackground.canvas.parentNode.offsetHeight;
             });
@@ -50,5 +50,16 @@ Game.Construct = function()
             Game.Background.drawImage(Game.assets['shadedBorders.png'],0,0,Game.Background.canvas.width,Game.Background.canvas.height); 
         }
 
+    }
+
+    function gDraw() {
+        gDrawBackground();
+
+        get("currency").innerHTML="You have no monies";
+        Game.drawT++;
+    }
+    function gMain() {
+        gDraw();
+        setTimeout(gMain,1000/Game.fps);
     }
 };

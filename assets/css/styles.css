@@ -1,0 +1,213 @@
+#sectionLeft
+{
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:30%;
+	bottom:0px;
+	min-width:100px;
+	overflow:hidden;
+}
+#sectionMiddle
+{
+	position:absolute;
+	left:30%;
+	padding-left:16px;
+	margin-right:15px;
+	top:0px;
+	right:318px;
+	bottom:0px;
+	min-width:100px;
+	overflow-x:hidden;
+	overflow-y:scroll;
+}
+#sectionRight
+{
+	height:100%;
+	position:absolute;
+	top:0px;
+	right:0px;
+	overflow-x:hidden;
+	overflow-y:scroll;
+}
+
+#sectionLeft .blackGradient
+{
+	background:url(../img/blackGradient.png) repeat-x bottom;
+	position:absolute;
+	left:0px;
+	right:0px;
+	top:300px;
+	height:640px;
+}
+#sectionLeft .blackFiller
+{
+	background:#000;
+	position:absolute;
+	left:0px;
+	right:0px;
+	top:940px;
+	bottom:0px;
+}
+
+#storeTitle
+{
+	width:284px;
+}
+#buildingsTitle
+{
+	display:none;
+}
+#upgrades
+{
+	height:60px;
+	width:300px;
+	position:relative;
+	overflow-y:hidden;
+}
+#upgrades:hover
+{
+	height:auto;
+	min-height:60px;
+}
+
+.separatorLeft, .separatorRight
+{
+	width:16px;
+	height:100%;
+	background:url(../img/panelVertical.png) repeat-y;
+	position:absolute;
+	top:0px;
+	bottom:0px;
+	z-index:100;
+}
+.separatorLeft
+{
+	left:30%;
+}
+.separatorRight
+{
+	right:317px;
+}
+
+#focusButtons
+{
+	display:none;
+	position:fixed;
+	left:0px;
+	bottom:0px;
+	height:64px;
+	width:100%;
+	background:url(../img/darkNoise.png);
+	z-index:1000000;
+	font-size:32px;
+}
+#focusButtons:before
+{
+	content:'';
+	display:block;
+	position:absolute;
+	left:0px;
+	top:-16px;
+	background:url(../img/blackGradient.png) repeat-x bottom;
+	background-size:100% 100%;
+	width:100%;
+	height:16px;
+	opacity:0.5;
+	pointer-events:none;
+}
+
+.separatorBottom
+{
+	width:100%;
+	height:16px;
+	background:url(../img/panelHorizontal.png) repeat-x;
+	position:absolute;
+	left:0px;
+	bottom:0px;
+}
+
+.button
+{
+	background:#000 url(../img/darkNoise.png);
+	box-shadow:0px 0px 3px #666 inset,0px 0px 4px #000;
+	position:absolute;
+	z-index:100;
+	width:64px;
+	height:24px;
+	text-align:center;
+	font-size:18px;
+	cursor:pointer;
+	
+	-webkit-transition: left 0.1s ease-out,right 0.1s ease-out,box-shadow 0.1s ease-out;
+	-moz-transition: left 0.1s ease-out,right 0.1s ease-out,box-shadow 0.1s ease-out;
+	-ms-transition: left 0.1s ease-out,right 0.1s ease-out,box-shadow 0.1s ease-out;
+	-o-transition: left 0.1s ease-out,right 0.1s ease-out,box-shadow 0.1s ease-out;
+	transition: left 0.1s ease-out,right 0.1s ease-out,box-shadow 0.1s ease-out;
+}
+.button:hover
+{
+	box-shadow:0px 0px 12px #ccc inset,0px 0px 4px #000;
+	z-index:1000;
+}
+#prefsButton:hover,#statsButton:hover{left:-8px;}
+#prefsButton,#statsButton{padding:14px 0px 10px 16px;}
+#prefsButton{top:0px;left:-16px;}
+#statsButton{bottom:16px;left:-16px;}
+#logButton:hover{right:-8px;}
+#logButton{padding:14px 16px 10px 0px;}
+#logButton{bottom:16px;right:-16px;}
+
+#game.onMenu #menu{display:block;}
+#game.onMenu .row{display:none;}
+#menu
+{
+	display:none;
+	z-index:1000000;
+	position:absolute;
+	left:16px;
+	right:0px;
+	top:112px;
+	bottom:0px;
+	/*box-shadow:0px 0px 24px #000 inset;
+	background:#000 url(img/darkNoise.png);*/
+}
+
+#comments
+{
+	padding:16px;
+	text-align:center;
+	position:relative;
+	padding-bottom:32px;
+	font-size:16px;
+	height:64px;
+	overflow:hidden;
+}
+#commentsText
+{
+	padding:0px 64px;
+}
+.commentsText q
+{
+	font-style:italic;
+}
+.commentsText sig
+{
+	font-size:70%;
+	display:block;
+	text-align:center;
+	opacity:0.7;
+}
+.commentsText sig:before
+{
+	content:"-";
+	padding-left:64px;
+}
+
+.title,.section
+{
+	font-family: 'Kavoon', Georgia,serif;
+	font-size:28px;
+	text-shadow:0px 0px 4px #000;
+	color:#fff;
+}

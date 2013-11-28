@@ -254,3 +254,23 @@ time, mark, audio, video {
 	left:0px;
 	top:0px;
 }
+
+#cookieAnchor
+{
+	position:absolute;
+	left:50%;
+	top:40%;
+}
+#bigCookie
+{
+	width:256px;
+	height:256px;
+	position:absolute;
+	left:-128px;
+	top:-128px;
+	/*background:url(img/perfectCookie.png);
+	background-size:256px 256px;*/
+	background:url(../img/empty.png);/* somehow necessary; an empty div with no background seems to be click-through */
+	cursor:pointer;
+	z-index:10000;
+}

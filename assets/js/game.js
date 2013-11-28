@@ -137,6 +137,7 @@ Game.Construct = function()
     }
     function gHandleClick() 
     {
+        console.log("hello");
         if (new Date().getTime()-Game.lastClick<1000/250)
         {} 
         else {

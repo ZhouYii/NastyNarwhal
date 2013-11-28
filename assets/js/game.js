@@ -32,7 +32,7 @@ Game.Construct = function()
             console.log("hi");
             Game.Background=get('backgroundCanvas').getContext('2d');
             Game.Background.canvas.width=Game.Background.canvas.parentNode.offsetWidth;
-            Game.Background.canvas.height=Game.Background.canvas.parentNode.offsetHeight;
+            Game.Background.canvas.height=screen.height;//Game.Background.canvas.parentNode.offsetHeight;
             Game.LeftBackground=get('backgroundLeftCanvas').getContext('2d');
             Game.LeftBackground.canvas.width=Game.LeftBackground.canvas.parentNode.offsetWidth;
             Game.LeftBackground.canvas.height=Game.LeftBackground.canvas.parentNode.offsetHeight;

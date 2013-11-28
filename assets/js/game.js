@@ -48,6 +48,7 @@ Game.Construct = function()
                   'shadedBorders.png',
                   'target.png',
                   'shine.png',
+                  'storetile.jpg',
                   'background_img.jpg'
                   ];
         for(var i in pics) {

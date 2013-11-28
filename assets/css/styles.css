@@ -254,6 +254,13 @@ time, mark, audio, video {
 	vertical-align: baseline;
 }
 
+#backgroundMidCanvas {
+        position:relative;
+        height:100%;
+        width:100%;
+        overflow:hidden;
+}
+
 #backgroundCanvas,#backgroundLeftCanvas
 {
 	position:absolute;

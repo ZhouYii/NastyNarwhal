@@ -268,6 +268,30 @@ time, mark, audio, video {
 	top:0px;
 }
 
+.product
+{
+	position: relative;
+	width:300px;
+	height:64px;
+	cursor:pointer;
+	background-image:url('../img/storeTile.jpg');
+
+}
+
+.product img
+{
+	float:left;
+	display: inline;
+}
+
+.content
+{
+	display: inline-block;
+	font-family: 'Kavoon', Georgia,serif;
+	text-shadow:0px 0px 4px #000;
+	font-size: 28px;
+	color:white;
+
 #cookieAnchor
 {
 	position:absolute;

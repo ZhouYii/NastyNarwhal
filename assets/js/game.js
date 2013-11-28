@@ -8,14 +8,19 @@ Game.Construct = function()
     Game.defaultBg = 'background_img.jpg';
     Game.targetX=0;
     Game.targetY=0;
+    Game.saveName = "theGame";
     /* Game Variables */
     Game.currency = 0;
+    Game.mouseEarnRate = 1;
+    Game.clickEarnings = 0;
+    Game.totalEarnings = 0;
+    Game.dateStarted = parseInt(new Date().getTime());
+
     Game.time = new Date().getTime();
     Game.lastClick = 0;
     Game.autoclickerDetected = 0;
     Game.BigCookieState = 0;
     Game.BigCookieSize = 0;
-    Game.mouseEarnRate = 1;
     Game.clicks = 0;
     Game.recalculateEarnRate = 1;
 
@@ -33,7 +38,7 @@ Game.Construct = function()
         AddEvent(bigCookie,'mouseover',function(event){Game.BigCookieState=2;});
         AddEvent(document,'mousemove', gGetMouseCoords);
     }
-    function gEarn (amt) {Game.currency += amt;};
+    function gEarn (amt) {Game.totalEarnings += amt; Game.currency += amt;};
     function gLoadAssets () {
         Game.assets = {};
         var pics=[
@@ -127,13 +132,42 @@ Game.Construct = function()
     {
         gDrawBackground();
         gDrawCookie();
-        get("currency").innerHTML="You have no monies";
+        get("currency").innerHTML="You have " + Game.currency + " monies";
         Game.drawT++;
     }
     function gMain() 
     {
         gDraw();
+        Game.time++;
+        gSave();
         setTimeout(gMain,1000/Game.fps);
+    }
+
+    function gSave() {
+            Game.lastDate=parseInt(new Date().getTime());
+            var str='';
+            /* Save some state */
+            str+=
+            parseInt(Game.dateStarted)+';'+
+            parseInt(Game.currency).toString()+';'+
+            parseInt(Game.totalEarnings).toString()+';'+
+            parseInt(Math.floor(Game.clicks))+';'+
+            parseInt(Game.clickEarnings).toString()+';'+
+            '|';
+            console.log('string: '+str);
+            /* Encode String */
+            str=utf8_to_b64(str)+'!END!';
+
+            Game.saveData=escape(str);
+            var now=new Date();
+            now.setFullYear(now.getFullYear()+5);
+            str=Game.saveName +'='+escape(str)+'; expires='+now.toUTCString()+';';
+
+            document.cookie=str;
+            if (document.cookie.indexOf(Game.SaveTo)<0) 
+                console.log('Error while saving.<br>Export your save instead!');
+            else 
+                console.log('Game saved');
     }
     function gHandleClick() 
     {
@@ -142,11 +176,10 @@ Game.Construct = function()
         {} 
         else {
             gEarn(Game.mouseEarnRate);
-            Game.handmadeCurrency+=gComputeCurrencyGain();
             /* TODO : import functionality for Game.CookieNumbers add */
             Game.clicks++;
         }
-        Game.mouseGain += Game.mouseEarnRate;
+        Game.clickEarnings += Game.mouseEarnRate;
         Game.lastClick=new Date().getTime();
     }
 

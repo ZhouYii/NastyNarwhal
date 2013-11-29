@@ -61,7 +61,7 @@ Game.Construct = function()
     gLoadAssets();
     /* Set listeners for the click target */
     gInitClickTarget();
-    /*Store.Construct(); */
+    Store.Construct();
     gMain();
 
     function gInitClickTarget() {
@@ -306,20 +306,40 @@ Store.Construct = function()
 
 }
 
+function BuyProduct(productId)
+{
+    console.log(productId);
+    get(productId).style.opacity='1';
+}
+
 function AddProduct(title, imageURL)
 {
     var productBar = get('products');
+    productBar.backgroundColor= '#000';
 
     var newDiv = document.createElement('div');
 
     var str;
-    str = '<div class="product"><img src='+imageURL+'><h1 class="content">'+title+'<h1><p>Another</p></div>';
+    str = '<div class="product" id='+title+'product'+'><img src='+imageURL+'><h1 class="content">'+title+'<h1><p>Another</p></div>';
     str += NewTooltip('Testing');
-    newDiv.innerHTML=str;
+    newDiv.innerHTML = str;
+    newDiv.onclick = function(){ BuyProduct(title+'product'); };
 
     productBar.appendChild(newDiv);
 }
 
+function AddUpgrade(title, imageURL)
+{
+    var upgradeBar = get('upgrades');
+
+    var newDiv = document.createElement('div');
+    newDiv.className='upgrade';
+    newDiv.setAttribute('id',title+upgrade);
+    str = '<img src='+imageURL+'>';
+    newDiv.innerHTML = str;
+
+    upgradeBar.appendChild(newDiv);
+}
 
 function NewTooltip(str)
 {

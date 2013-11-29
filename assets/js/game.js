@@ -61,6 +61,7 @@ Game.Construct = function()
     gLoadAssets();
     /* Set listeners for the click target */
     gInitClickTarget();
+    /*Store.Construct(); */
     gMain();
 
     function gInitClickTarget() {
@@ -275,3 +276,52 @@ Game.Construct = function()
         Game.recalculateEarnRate = 0;
     }
 };
+
+var Store = {};
+Store.Construct = function()
+{
+    Store.productList = [ 
+    {name: 'apples', cost: 10},
+    {name: 'tomatoes', cost: 20},
+    {name: 'bananas', cost: 30},
+    {name: 'cherries', cost: 40},
+    {name: 'mangos', cost: 50}, 
+    {name: 'strawberries', cost: 60},
+    {name: 'oranges', cost: 70},
+    {name: 'grapes', cost: 80},
+    {name: 'watermelon', cost: 90},
+    {name: 'dragonfruit', cost: 100}
+    ];
+
+    for(var i = 0; i < Store.productList.length; i++)
+    {
+        AddProduct(Store.productList[i].name, '#');
+        Store.productList[i].active = false;
+    }
+
+    var ProductBar = get('products');
+    newDiv = document.createElement('div');
+    newDiv.innerHTML = '<br><br><br><br><br>';
+    ProductBar.appendChild(newDiv);
+
+}
+
+function AddProduct(title, imageURL)
+{
+    var productBar = get('products');
+
+    var newDiv = document.createElement('div');
+
+    var str;
+    str = '<div class="product"><img src='+imageURL+'><h1 class="content">'+title+'<h1><p>Another</p></div>';
+    str += NewTooltip('Testing');
+    newDiv.innerHTML=str;
+
+    productBar.appendChild(newDiv);
+}
+
+
+function NewTooltip(str)
+{
+    return '<div class="tooltip" style="height:64px;width:300px;">'+str+'</div>';
+}

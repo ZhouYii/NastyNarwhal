@@ -227,7 +227,7 @@ html,body
 
 .title,.section
 {
-	font-family: 'Patrick Hand SC','Kavoon', Georgia,serif;
+	font-family: 'Kavoon', Georgia,serif;
 	font-size:28px;
 	text-shadow:0px 0px 4px #000;
 	color:#fff;
@@ -268,39 +268,16 @@ time, mark, audio, video {
 	top:0px;
 }
 
-.tooltip
-{
-	background-image:url('../img/storeTile.jpg');
-	position:absolute;
-	float:right;
-	width:300px;
-	height:64px;
-	display: none;
-}
-
 .product
 {
-	content: counter(productIndex);
 	position: relative;
 	width:300px;
 	height:64px;
 	cursor:pointer;
-	background-color: black;
 	background-image:url('../img/storeTile.jpg');
-	opacity: .4;
+
 }
 
-.product:hover + .tooltip
-{
-	display:inline;
-	z-index: 500;
-}
-.zoneTitle
-{
-	text-align:center;
-	padding:8px;
-	width:100%;
-}
 .product img
 {
 	float:left;
@@ -310,26 +287,15 @@ time, mark, audio, video {
 .content
 {
 	display: inline-block;
-	font-family: 'Patrick Hand SC','Kavoon', Georgia,serif;
+	font-family: 'Kavoon', Georgia,serif;
 	text-shadow:0px 0px 4px #000;
 	font-size: 28px;
 	color:white;
 }
+<<<<<<< HEAD
 
-.upgrade
-{
-	content: counter(upgradeIndex);
-	position: relative;
-	float:left;
-	width:45px;
-	height:45px;
-	padding-left: 15px;
-	padding-top: 15px;
-	cursor:pointer;
-	background-color: #fff;
-	background-image:url('../img/upgradeFrame.png');
-}
-
+=======
+>>>>>>> 8c921d3200f577f2e0be6b838eb9e9956ea6d8de
 #cookieAnchor
 {
 	position:absolute;
@@ -351,34 +317,6 @@ time, mark, audio, video {
 	z-index:10000;
 }
 
-#inv-body, #inv-top, #inv-bot
-{   
-        position:relative;
-}
-
-#inv-anchor
-{
-        margin-left: 4%;
-        margin-right: 0px;
-        width:603px;
-}
-
-#inv-slots 
-{
-        top: 0;
-        left: 5;
-        position:absolute;
-}
-
-#inv-title
-{
-	left:0px;
-	top:15%;
-	width:100%;
-	text-align:center;
-	z-index:200;
-	padding:2px 0px;
-}
 #currency
 {
 	position:absolute;
@@ -390,10 +328,4 @@ time, mark, audio, video {
 	background:#000;
 	background:rgba(0,0,0,0.4);
 	padding:2px 0px;
-}
-
-#products
-{
-	background-color: #000;
-	height:640px;
 }

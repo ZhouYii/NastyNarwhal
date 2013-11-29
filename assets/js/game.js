@@ -44,6 +44,7 @@ Game.Construct = function()
     Game.totalEarnings = 0;
     Game.earningsPerSec = 0.0;
     Game.dateStarted = parseInt(new Date().getTime());
+    Game.theme = "maplestory";
 
     Game.time = new Date().getTime();
     Game.lastClick = 0;
@@ -301,25 +302,34 @@ Game.Construct = function()
     }
 };
 
+function StoreProduct(name, baseCost)
+{
+    this.productName = name;
+    this.baseCost = baseCost;
+}
+
+maplestoryProducts = ['Blue Snail', 'Ribbon Pig', 'Pet Panda', 'Horse Mount', 'Dinodon', 
+                    'Master Robo', 'Pet Dragon', 'Grendel The Really Old', 'Great Spirit', 'Puri Puri'];
+
 var Store = {};
 Store.Construct = function()
 {
-    Store.productList = [ 
-    {name: 'apples', cost: 10},
-    {name: 'tomatoes', cost: 20},
-    {name: 'bananas', cost: 30},
-    {name: 'cherries', cost: 40},
-    {name: 'mangos', cost: 50}, 
-    {name: 'strawberries', cost: 60},
-    {name: 'oranges', cost: 70},
-    {name: 'grapes', cost: 80},
-    {name: 'watermelon', cost: 90},
-    {name: 'dragonfruit', cost: 100}
-    ];
+    Store.productList = [];
+    var folder = 'assets/img/'+Game.theme+'/';
+
+    switch(Game.theme)
+    {
+        case 'maplestory':
+            for(var i = 0; i < 10; i++)
+            {
+                Store.productList[i] = new StoreProduct(maplestoryProducts[i], i * 10);
+            }
+        break;
+    }
 
     for(var i = 0; i < Store.productList.length; i++)
     {
-        AddProduct(Store.productList[i].name, '#');
+        AddProduct(Store.productList[i].productName, folder+'product'+i+'.png');
         Store.productList[i].active = false;
     }
 
@@ -340,14 +350,22 @@ function AddProduct(title, imageURL)
 {
     var productBar = get('products');
     productBar.backgroundColor= '#000';
+    var split = title.split(" ");
+    var id = "";
+
+    for(var i = 0; i < split.length; i++)
+    {
+        id += split[i];
+    }
 
     var newDiv = document.createElement('div');
 
     var str;
-    str = '<div class="product" id='+title+'product'+'><img src='+imageURL+'><h1 class="content">'+title+'<h1><p>Another</p></div>';
-    str += NewTooltip('Testing');
+    str = '<div class="product" id='+id+'product'+'><img src='+imageURL+'><h1 class="content">'+title+'</h1>';
+    str += '<span class="cost"><img src=\'assets/img/'+Game.theme+'/cash.png\'></span></div>';
+    str += NewTooltip(title);
     newDiv.innerHTML = str;
-    newDiv.onclick = function(){ BuyProduct(title+'product'); };
+    newDiv.onclick = function(){ BuyProduct(id+'product'); };
 
     productBar.appendChild(newDiv);
 }

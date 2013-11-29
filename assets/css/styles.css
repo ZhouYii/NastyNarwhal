@@ -78,6 +78,7 @@ html,body
 {
 	height:60px;
 	width:300px;
+	right:0px;
 	position:relative;
 	overflow-y:hidden;
 }
@@ -95,7 +96,6 @@ html,body
 	position:absolute;
 	top:0px;
 	bottom:0px;
-	z-index:100;
 }
 .separatorLeft
 {
@@ -305,11 +305,22 @@ time, mark, audio, video {
 {
 	float:left;
 	display: inline;
+	width:15%;
+	height:85%;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+.cost img
+{
+	height:17px;
+	width:17px;
+	position:relative;
 }
 
 .content
 {
-	display: inline-block;
+	display: block;
 	font-family: 'Patrick Hand SC','Kavoon', Georgia,serif;
 	text-shadow:0px 0px 4px #000;
 	font-size: 28px;

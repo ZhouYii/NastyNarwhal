@@ -71,7 +71,7 @@ function InvRedrawItems(){
 function InvAddItem(item) {
     if(Inv.items.length < Inv.size) 
         Inv.items.push(item);
-    Inv.updateCapacity();
+    InvUpdateCapacity();
 }
 
 
@@ -79,22 +79,38 @@ function removeItem(item) {
     if(item == null || Inv.items == null)
        return false;
     for(var i = 0 ; i < Inv.items.length; i++) {
-        if(Inv.items[0].name == item.name && Inv.items[0].id == item.id) {
+        if(Inv.items[i].name == item.name && Inv.items[i].id == item.id) {
             Inv.items.splice(i, 1);
             item.image.parentNode.removeChild(item.image);
-            Inv.updateCapacity();
+            InvUpdateCapacity();
             return true;
         }
     }
     return false;
 }
 
-function generate_item(itemName, itemImage, useCallback) {
+
+function generate_item(name) {
+    var tmp;
+    switch(name)
+    {
+        case "Drugs":
+             tmp = _generate_item("Drugs", "drugs.png", aDrug);
+             break;
+    }
+    if(tmp == null)
+        return;
+    InvAddItem(tmp);
+    InvRedrawItems();
+}
+
+function _generate_item(itemName, itemImage, useCallback) {
     var item = {};
     item.name = itemName;
     item.id = Math.random();
     item.image = document.createElement("img");
     item.image.src = "assets/img/"+itemImage;
+    item.image.id = item.id;
     item.useMe = useCallback;
     item.image.onclick = function() {
         if(!removeItem(item))
@@ -104,3 +120,13 @@ function generate_item(itemName, itemImage, useCallback) {
     };
     return item;
 }
+
+function InvUpdateCapacity() {
+    var target = get("inv-title"), size = Inv.items.length;
+    if(size == null)
+        size = 0;
+
+    target.innerHTML = "Inventory ("+size+"/"+Inv.size+")";
+};
+
+

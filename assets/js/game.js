@@ -1,7 +1,7 @@
 var Game = {};
 var Inv = {};
 Inv.Init = function() {
-    Inv.size = 30;
+    Inv.size = 32;
     Inv.numRows = 0;
     Inv.topImg = "inv_top.png";
     Inv.rowImg = "inv_row.png";
@@ -26,11 +26,6 @@ Inv.Init = function() {
     target.appendChild(mid_div);
     target.appendChild(bot_img);
 
-    Inv.updateCapacity = function() {
-        var target = get("inv-title");
-        target.innerHTML = "Inventory ("+Inv.items.length+"/"+Inv.size+")";
-    }
-
 };
 Game.Construct = function() 
 {
@@ -47,6 +42,7 @@ Game.Construct = function()
     Game.mouseEarnRate = 1;
     Game.clickEarnings = 0;
     Game.totalEarnings = 0;
+    Game.earningsPerSec = 0.0;
     Game.dateStarted = parseInt(new Date().getTime());
 
     Game.time = new Date().getTime();
@@ -56,7 +52,7 @@ Game.Construct = function()
     Game.BigCookieSize = 0;
     Game.clicks = 0;
     Game.recalculateEarnRate = 1;
-
+    Inv.Init();
     gLoad();
     gLoadAssets();
     /* Set listeners for the click target */
@@ -189,17 +185,32 @@ Game.Construct = function()
         gDrawBackground();
         gDrawCookie();
         gDrawInventory();
-        get("currency").innerHTML="You have " + Game.currency + " monies";
+        get("currency").innerHTML="You have " + Beautify(Game.currency,2) + " monies." + 
+          "<div style='font-size:50%;'> per second : " + Game.earningsPerSec + "</div>";
         Game.drawT++;
     }
+    
+    function gCalcPS() {
+        var d = new Date();
+        var now = d.getTime();
+        if(Game.lastCalcPS == null) {
+            Game.lastCalcPS = now;
+            return;
+        }
+        var diff = (now - Game.lastCalcPS)/1000.0001;
+        gEarn(diff*Game.earningsPerSec);
+        Game.lastCalcPS = now;
+    }
+
     function gMain() 
     {
         gDraw();
-        Game.time++;
-
+        if((Game.time%2) == 0)
+            gCalcPS();
         if((Game.time%60) == 0)
-          gSave();
+            gSave();
         setTimeout(gMain,1000/Game.fps);
+        Game.time++;
     }
 
     function gLoad() {
@@ -220,6 +231,15 @@ Game.Construct = function()
             Game.totalEarnings = parseInt(p1[2]);
             Game.clicks = parseInt(p1[3]);
             Game.clickEarnings = parseInt(p1[4]);
+            Inv.size = parseInt(p1[5]);
+            Game.earningsPerSec = parseFloat(p1[6]);
+
+            var p2 = str[1].split(';');
+            console.log(str);
+            for(var i = 0 ; i < p2.length; i++) {
+                generate_item(p2[i]);
+            }
+
         }
     }
 
@@ -233,7 +253,14 @@ Game.Construct = function()
         parseInt(Game.totalEarnings).toString()+';'+
         parseInt(Math.floor(Game.clicks))+';'+
         parseInt(Game.clickEarnings).toString()+';'+
+        parseInt(Inv.size).toString()+';'+
+        parseFloat(Game.earningsPerSec).toString()+';'+
         '|';
+        /* Save all item names */
+        for(var i = 0 ; i < Inv.items.length; i++) {
+            str += Inv.items[i].name + ";";
+            /* Maybe store power later */
+        }
         /* Encode String */
         str=utf8_to_b64(str)+'!END!';
 
@@ -248,9 +275,7 @@ Game.Construct = function()
     function gGod() {
         var playerLuck = Math.random() * 100;
         if(playerLuck > 30) {
-            var drugItem = generate_item("Drugs", "drugs.png", function(){console.log("used");});
-            InvAddItem(drugItem);
-            InvRedrawItems();
+            generate_item("Drugs");
         }
             
 

@@ -9,6 +9,7 @@ Inv.Init = function() {
     Inv.slotImg = "inv_slot.png";
     Inv.items = [];
 
+    /* Set up DOM */
     var bot_img = document.createElement('img');
     bot_img.setAttribute("id", "inv-bot");
     bot_img.src = "assets/img/"+Inv.botImg;
@@ -20,29 +21,14 @@ Inv.Init = function() {
     var slots = document.createElement('div');
     slots.setAttribute("id", "inv-slots");
     mid_div.appendChild(slots);
-
     var target = get("inv-anchor");
     target.appendChild(top_img);
     target.appendChild(mid_div);
     target.appendChild(bot_img);
-    
-    var drugItem = generate_item("Drugs", "drugs.png", function(){console.log("used");});
-    InvAddItem(drugItem);
-    InvRedrawItems();
 
-    function iSpawnInvSlots(num) {
-        var slot_img = Game.assets[Inv.rowImg];
-        if(slot_img == null || target == null) {
-            console.log("Can't load elements for spawning inventory slot"+slot_img+target);
-            return;
-        }
-        for(var i = 0 ; i < num ; i ++ ) {
-            var elem = document.createElement('img');
-            elem.setAttribute("id", "inv-slot");
-            elem.src = "assets/img/drugs.png";
-            target.appendChild(elem);
-        }
-        
+    Inv.updateCapacity = function() {
+        var target = get("inv-title");
+        target.innerHTML = "Inventory ("+Inv.items.length+"/"+Inv.size+")";
     }
 
 };

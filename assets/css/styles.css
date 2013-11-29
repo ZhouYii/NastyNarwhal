@@ -268,14 +268,31 @@ time, mark, audio, video {
 	top:0px;
 }
 
+.tooltip
+{
+	background-image:url('../img/storeTile.jpg');
+	position:absolute;
+	float:right;
+	width:300px;
+	height:64px;
+	display: none;
+}
+
 .product
 {
+	content: counter(productIndex);
 	position: relative;
 	width:300px;
 	height:64px;
 	cursor:pointer;
+	background-color: black;
 	background-image:url('../img/storeTile.jpg');
+}
 
+.product:hover + .tooltip
+{
+	display:inline;
+	z-index: 500;
 }
 
 .product img

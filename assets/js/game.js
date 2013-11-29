@@ -30,6 +30,8 @@ Inv.Init = function() {
 Game.Construct = function() 
 {
     Game.unlockedBackgrounds = [];
+    Game.currentTarget = null;
+    Game.baseTarget = "big/basic.png";
     Game.initialized = 0;
     Game.T = 0;
     Game.drawT = 0;
@@ -57,11 +59,13 @@ Game.Construct = function()
 
     unlockBackground("background_img.jpg");
     Game.currentBg = backgroundUnlocked("background_img.jpg");
-    gLoad();
     gLoadAssets();
+    gLoad();
     /* Set listeners for the click target */
     gInitClickTarget();
     Store.Construct();
+    if(Game.currentTarget==null)
+        gSetCurrTarget(Game.baseTarget);
     gMain();
 
     function gInitClickTarget() {
@@ -77,7 +81,18 @@ Game.Construct = function()
     function gEarn (amt) {Game.totalEarnings += amt; Game.currency += amt;};
     function gLoadAssets () {
         Game.assets = {};
-        var pics=[
+        /* The things we click */
+        var targets=['big/opt1.png',
+                  'big/basic.png'
+                 ];
+        for(var i = 0; i < targets.length; i++) {
+            var img = new Image();
+            img.source = "assets/img/"+targets[i];
+            Game.assets[targets[i]] = img;
+            gLoadTarget(targets[i]);
+        }
+        var pics=['big/opt1.png',
+                  'big/basic.png',
                   'blackGradient.png',
                   'shadedBorders.png',
                   'target.png',
@@ -96,6 +111,33 @@ Game.Construct = function()
             img.src = "assets/img/" + pics[i];
             img.onload = gDrawBackground;
             Game.assets[pics[i]] = img;
+        }
+    }
+
+    /* Load the assets for the click targets */
+    function gLoadTarget(filename) {
+        if(Game.targets == null)
+            Game.targets = [];
+        var tmp = {};
+        tmp.name = filename;
+        switch(filename) {
+            case "big/basic.png":
+                tmp.popName = "FactoryThingsRepaceMe";
+                tmp.vitality = 9999;
+                /* No implementation yet */
+                tmp.swapFunc = function(){};
+                tmp.clickFunc = function(){};
+                break;
+            case "big/opt1.png":
+                tmp.popName = "Innocent Pikachu";
+                tmp.vitality = 35;
+                /* No implementation yet */
+                tmp.swapFunc = function(){};
+                tmp.clickFunc = function(){};
+                break;
+        }
+        if(tmp.vitality != null){
+            Game.targets.push(tmp);
         }
     }
 
@@ -169,7 +211,11 @@ Game.Construct = function()
         var s=256*Game.BigCookieSize;
         var x=Game.targetX-s/2;
         var y=Game.targetY-s/2;
-        Game.LeftBackground.drawImage(Game.assets['target.png'],x,y,s,s);
+        if(Game.currentTarget == null) {
+            Game.LeftBackground.drawImage(Game.assets['target.png'],x,y,s,s);
+        } else {
+            Game.LeftBackground.drawImage(Game.assets[Game.currentTarget.name],x,y,s,s);
+        }
     }
 
     function gDrawInventory() {
@@ -230,7 +276,7 @@ Game.Construct = function()
             }
             str = str.split('!END!')[0];
             str = b64_to_utf8(str);
-            console.log("load: "+str);
+            console.log("load:"+str);
             str = str.split('|');
             /* Only have one part of save data : the state variables */
             var p1 = str[0].split(';');
@@ -244,6 +290,9 @@ Game.Construct = function()
             Game.earningsPerSec = parseFloat(p1[6]);
             unlockBackground(p1[7]);
             Game.currentBg = backgroundUnlocked(p1[7]);
+            gSetCurrTarget(p1[8]);
+            if(Game.currentTarget != null)
+                Game.currentTarget.vitality = p1[9];
 
             var p2 = str[1].split(';');
             for(var i = 0 ; i < p2.length; i++) {
@@ -255,7 +304,6 @@ Game.Construct = function()
             for(var i = 0 ; i < p3.length; i++) {
                 unlockBackground(p3[i]);
             }
-
         }
     }
 
@@ -272,6 +320,8 @@ Game.Construct = function()
         parseInt(Inv.size).toString()+';'+
         parseFloat(Game.earningsPerSec).toString()+';'+
         Game.currentBg.name+";"+
+        Game.currentTarget.name+";"+
+        parseInt(Game.currentTarget.vitality)+";"+
         '|';
         /* Save all item names */
         for(var i = 0 ; i < Inv.items.length; i++) {
@@ -283,7 +333,7 @@ Game.Construct = function()
         for(var i = 0 ; i < Game.unlockedBackgrounds.length; i++) {
             str += Game.unlockedBackgrounds[i].name + ";";
         }
-        console.log(str);
+        console.log("Save:"+str);
         /* Encode String */
         str=utf8_to_b64(str)+'!END!';
 
@@ -299,7 +349,18 @@ Game.Construct = function()
         if(playerLuck > 30) {
             generate_item("Drugs");
         }
+        if(playerLuck > 80 && Game.currentTarget.name == Game.baseTarget) {
+            gRandomEncounter();
+        }
 
+    }
+
+    function gRandomEncounter() {
+        var index = Math.floor(Math.random() * Game.targets.length);
+        console.log(index);
+        var template = Game.targets[index];
+        console.log(template);
+        gCloneTarget(template);
     }
     function gHandleClick() 
     {
@@ -313,6 +374,35 @@ Game.Construct = function()
         }
         Game.clickEarnings += Game.mouseEarnRate;
         Game.lastClick=new Date().getTime();
+
+        if(Game.currentTarget == null || Game.currentTarget.vitality <= 0) {
+            gSetCurrTarget("big/basic.png");
+        } else {
+            /* Randomly kill off 1-3 vitality */
+            Game.currentTarget.vitality -= Math.ceil(3*Math.random());
+        }
+    }
+    function gSetCurrTarget(name) {
+        console.log("name:"+name);
+        if(Game.targets == null)
+            return;
+        for(var i = 0; i < Game.targets.length; i++) {
+            if(name == Game.targets[i].name) {
+                gCloneTarget(Game.targets[i]);
+                return true;
+            }
+        }
+    }
+
+    function gCloneTarget(template) {
+        if(template == null)
+            return;
+        Game.currentTarget = {};
+        Game.currentTarget.name = template.name;
+        Game.currentTarget.popName = template.popName;
+        Game.currentTarget.vitality = template.vitality;
+        Game.currentTarget.swapFunc = template.swapFunc;
+        Game.currentTarget.clickFunc = template.clickFunc;
     }
 
     /* TODO : Modify later for new buildings and achievements... etc */

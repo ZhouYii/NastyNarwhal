@@ -103,8 +103,15 @@ function generate_item(name) {
     switch(name)
     {
         case "Drugs":
-             tmp = _generate_item("Drugs", "drugs.png", aDrug);
-             break;
+            tmp = _generate_item("Drugs", "drugs.png", aDrug);
+            break;
+
+        /* Only generate a background item when it is swapped out */
+        case "background_img.jpg":
+        case "orbisship.png":
+            tmp = _generate_item(name, "background.png", 
+                                 function() {swapBg(name);});
+            break;
     }
     if(tmp == null)
         return;
@@ -152,6 +159,7 @@ function unlockBackground(img_name) {
     }
     if(tmp.func != null) {
         Game.unlockedBackgrounds.push(tmp)
+        return true;
     }
 
 }
@@ -166,4 +174,16 @@ function backgroundUnlocked(img_name) {
               return Game.unlockedBackgrounds[i];
         }
         return false;
+}
+
+function swapBg(new_bg) {
+    unlockBackground(new_bg);
+    var tmp = backgroundUnlocked(new_bg);
+    if(tmp == false)
+        return;
+    var old = Game.currentBg.name;
+    Game.currentBg = tmp;
+    console.log(Game.currentBg.name);
+    /* Spawn the item */
+    generate_item(old);
 }

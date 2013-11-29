@@ -89,14 +89,13 @@ function removeItem(item) {
     return false;
 }
 
-function test() {}
 
 function generate_item(name) {
     var tmp;
     switch(name)
     {
         case "Drugs":
-             tmp = _generate_item("Drugs", "drugs.png", test);
+             tmp = _generate_item("Drugs", "drugs.png", aDrug);
              break;
     }
     if(tmp == null)

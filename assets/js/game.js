@@ -26,14 +26,6 @@ Inv.Init = function() {
     target.appendChild(mid_div);
     target.appendChild(bot_img);
 
-    Inv.updateCapacity = function() {
-        var target = get("inv-title"), size = Inv.items.size;
-        if(size == null)
-            size = 0;
-
-        target.innerHTML = "Inventory ("+size+"/"+Inv.size+")";
-    };
-
 };
 Game.Construct = function() 
 {
@@ -50,6 +42,7 @@ Game.Construct = function()
     Game.mouseEarnRate = 1;
     Game.clickEarnings = 0;
     Game.totalEarnings = 0;
+    Game.earningsPerSec = 0.0;
     Game.dateStarted = parseInt(new Date().getTime());
 
     Game.time = new Date().getTime();
@@ -192,17 +185,32 @@ Game.Construct = function()
         gDrawBackground();
         gDrawCookie();
         gDrawInventory();
-        get("currency").innerHTML="You have " + Game.currency + " monies";
+        get("currency").innerHTML="You have " + Beautify(Game.currency,2) + " monies." + 
+          "<div style='font-size:50%;'> per second : " + Game.earningsPerSec + "</div>";
         Game.drawT++;
     }
+    
+    function gCalcPS() {
+        var d = new Date();
+        var now = d.getTime();
+        if(Game.lastCalcPS == null) {
+            Game.lastCalcPS = now;
+            return;
+        }
+        var diff = (now - Game.lastCalcPS)/1000.0001;
+        gEarn(diff*Game.earningsPerSec);
+        Game.lastCalcPS = now;
+    }
+
     function gMain() 
     {
         gDraw();
-        Game.time++;
-
+        if((Game.time%2) == 0)
+            gCalcPS();
         if((Game.time%60) == 0)
-          gSave();
+            gSave();
         setTimeout(gMain,1000/Game.fps);
+        Game.time++;
     }
 
     function gLoad() {
@@ -223,8 +231,8 @@ Game.Construct = function()
             Game.totalEarnings = parseInt(p1[2]);
             Game.clicks = parseInt(p1[3]);
             Game.clickEarnings = parseInt(p1[4]);
-            console.log(parseInt(p1[5]));
             Inv.size = parseInt(p1[5]);
+            Game.earningsPerSec = parseFloat(p1[6]);
 
             var p2 = str[1].split(';');
             console.log(str);
@@ -246,6 +254,7 @@ Game.Construct = function()
         parseInt(Math.floor(Game.clicks))+';'+
         parseInt(Game.clickEarnings).toString()+';'+
         parseInt(Inv.size).toString()+';'+
+        parseFloat(Game.earningsPerSec).toString()+';'+
         '|';
         /* Save all item names */
         for(var i = 0 ; i < Inv.items.length; i++) {

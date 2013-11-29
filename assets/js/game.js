@@ -142,16 +142,15 @@ Game.Construct = function()
         Game.assets = {};
         /* The things we click */
         var targets=['big/opt1.png',
+                    'big/opt2.png',
+                    'big/opt3.png',
+                    'big/opt4.gif',
                   'big/basic.png'
                  ];
         for(var i = 0; i < targets.length; i++) {
-            var img = new Image();
-            img.source = "assets/img/"+targets[i];
-            Game.assets[targets[i]] = img;
             gLoadTarget(targets[i]);
         }
-        var pics=['big/opt1.png',
-                  'big/basic.png',
+        var pics=[
                   'blackGradient.png',
                   'shadedBorders.png',
                   'target.png',
@@ -165,6 +164,7 @@ Game.Construct = function()
                   'inv_slot.png',
                   'background_img.jpg'
                   ];
+        pics = pics.concat(targets);
         for(var i = 0 ; i < pics.length; i++) {
             var img = new Image();
             img.src = "assets/img/" + pics[i];
@@ -177,28 +177,43 @@ Game.Construct = function()
     function gLoadTarget(filename) {
         if(Game.targets == null)
             Game.targets = [];
-        var tmp = {};
-        tmp.name = filename;
+        var tmp = null;
         switch(filename) {
             case "big/basic.png":
-                tmp.popName = "FactoryThingsRepaceMe";
-                tmp.vitality = 9999;
-                /* No implementation yet */
-                tmp.swapFunc = function(){};
-                tmp.convo = [""];
-                tmp.clickFunc = function(){};
+                tmp = spawnTarget(filename, "Innocent Pikachu", 9999, function(){}, function(){},
+                                  ["Pika!", "Pikapi!", "Pika", "Pi", "What does the fox say?"]);
+                break;
+
+            case "big/opt4.gif":
+                tmp = spawnTarget(filename, "Slime", 60, function(){}, function(){}, 
+                                  ["", ""]);
+                break;
+            case "big/opt3.png":
+                tmp = spawnTarget(filename, "Mushmom", 80, function(){}, function(){}, 
+                                  ["", ""]);
+                break;
+            case "big/opt2.png":
+                tmp = spawnTarget(filename, "Mushroom", 40, function(){}, function(){}, 
+                                  ["I am nutritious!", ""]);
                 break;
             case "big/opt1.png":
-                tmp.popName = "Innocent Pikachu";
-                tmp.vitality = 35;
-                /* No implementation yet */
-                tmp.swapFunc = function(){};
-                tmp.convo = ["Pika!", "Pikapi!"];
-                tmp.clickFunc = function(){};
+                tmp = spawnTarget(filename, "Factory", 9, function(){}, function(){}, 
+                                  [""]);
                 break;
         }
-        if(tmp.vitality != null){
+        if(tmp != null){
             Game.targets.push(tmp);
+        }
+
+        function spawnTarget(name, popName, vitality, swapFunc, clickFunc, convo) {
+            var tmp = {}
+            tmp.name = name;
+            tmp.popName = popName;
+            tmp.vitality = vitality;
+            tmp.swapFunc = swapFunc;
+            tmp.clickFunc = clickFunc;
+            tmp.convo = convo;
+            return tmp;
         }
     }
 

@@ -277,7 +277,6 @@ Game.Construct = function()
         if(playerLuck > 30) {
             generate_item("Drugs");
         }
-            
 
     }
     function gHandleClick() 

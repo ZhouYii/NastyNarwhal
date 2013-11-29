@@ -2,6 +2,14 @@ function get(id) {
     return document.getElementById(id);
 }
 
+function hide_div(div) {
+    get(div).style.visibility = "hidden";
+}
+
+function show_div(div) {
+    get(div).style.visibility = "";
+}
+
 function rand_elem(arr) {
    return arr[Math.floor(Math.random()*arr.length)];
 }

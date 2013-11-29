@@ -227,7 +227,7 @@ html,body
 
 .title,.section
 {
-	font-family: 'Kavoon', Georgia,serif;
+	font-family: 'Patrick Hand SC','Kavoon', Georgia,serif;
 	font-size:28px;
 	text-shadow:0px 0px 4px #000;
 	color:#fff;
@@ -310,8 +310,12 @@ time, mark, audio, video {
 .content
 {
 	display: inline-block;
+<<<<<<< HEAD
 	font-family: 'Permanent Marker', cursive;
 	font-weight: bold;
+=======
+	font-family: 'Patrick Hand SC','Kavoon', Georgia,serif;
+>>>>>>> c4488768732b9dbf2244678fdcec2b2f71dafdd3
 	text-shadow:0px 0px 4px #000;
 	font-size: 28px;
 	color:white;

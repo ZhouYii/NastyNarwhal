@@ -54,19 +54,6 @@ Game.Construct = function()
     Game.clicks = 0;
     Game.recalculateEarnRate = 1;
     Inv.Init();
-    /* Init Clicknumbers */
-    Game.cookieNumbers=[];
-    var str='';
-    for (var i=0;i<20;i++)
-    {
-        Game.cookieNumbers[i]={x:0,y:0,life:-1,text:''};
-        str+='<div id="cookieNumber'+i+'" class="cookieNumber title"></div>';
-    }
-    get('cookieNumbers').innerHTML=str;
-
-    unlockBackground("background_img.jpg");
-    Game.currentBg = backgroundUnlocked("background_img.jpg");
-    gLoadAssets();
     gLoad();
     gLoadAssets();
     /* Set listeners for the click target */
@@ -74,56 +61,6 @@ Game.Construct = function()
     Store.Construct();
     gMain();
 
-    
-    function gCookieNumbersUpdate()
-    {
-        for (var i in Game.cookieNumbers)
-        {
-            var me=Game.cookieNumbers[i];
-            if (me.life!=-1)
-            {
-                me.y-=me.life*0.5+Math.random()*0.5;
-                me.life++;
-                var el=me.l;
-                el.style.left=Math.floor(me.x)+'px';
-                el.style.top=Math.floor(me.y)+'px';
-                el.style.opacity=1-(me.life/(Game.fps*1));
-                //l('cookieNumber'+i).style.zIndex=(1000+(Game.fps*1-me.life));
-                if (me.life>=Game.fps*1)
-                {
-                    me.life=-1;
-                    me.l.style.opacity=0;
-                }
-            }
-        }
-    }
-    function gCookieNumberAdd(text)
-    {
-        //pick the first free (or the oldest) particle to replace it
-        var highest=0;
-        var highestI=0;
-        for (var i in Game.cookieNumbers)
-        {
-            if (Game.cookieNumbers[i].life==-1) {highestI=i;break;}
-            if (Game.cookieNumbers[i].life>highest)
-            {
-                highest=Game.cookieNumbers[i].life;
-                highestI=i;
-            }
-        }
-        var i=highestI;
-        var x=-100+(Math.random()-0.5)*40;
-        var y=0+(Math.random()-0.5)*40;
-        var me=Game.cookieNumbers[i];
-        if (!me.l) me.l=get('cookieNumber'+i);
-        me.life=0;
-        me.x=x;
-        me.y=y;
-        me.text=text;
-        me.l.innerHTML=text;
-        me.l.style.left=Math.floor(Game.cookieNumbers[i].x)+'px';
-        me.l.style.top=Math.floor(Game.cookieNumbers[i].y)+'px';
-    }
     function gInitClickTarget() {
         var bigCookie = get('bigCookie');
         AddEvent(bigCookie,'click',gHandleClick);
@@ -252,7 +189,6 @@ Game.Construct = function()
         get("currency").innerHTML="You have " + Beautify(Game.currency,2) + " monies." + 
           "<div style='font-size:50%;'> per second : " + Game.earningsPerSec + "</div>";
         Game.drawT++;
-        gCookieNumbersUpdate();
     }
     
     function gCalcPS() {
@@ -291,17 +227,9 @@ Game.Construct = function()
             }
             str = str.split('!END!')[0];
             str = b64_to_utf8(str);
-<<<<<<< HEAD
-            //console.log("load:"+str);
             str = str.split('|');
             /* Only have one part of save data : the state variables */
             var p1 = str[0].split(';');
-            //console.log(p1);
-=======
-            str = str.split('|');
-            /* Only have one part of save data : the state variables */
-            var p1 = str[0].split(';');
->>>>>>> 8840514f334b2ba6d08da9c7b794b15b651f49cc
             Game.dateStarted = parseInt(p1[0]);
             Game.currency = parseInt(p1[1]);
             Game.totalEarnings = parseInt(p1[2]);
@@ -337,15 +265,6 @@ Game.Construct = function()
             str += Inv.items[i].name + ";";
             /* Maybe store power later */
         }
-<<<<<<< HEAD
-        str += '|';
-        /* Save all unlocked backgrounds TODO: save current, generate objects for noncurrent*/
-        for(var i = 0 ; i < Game.unlockedBackgrounds.length; i++) {
-            str += Game.unlockedBackgrounds[i].name + ";";
-        }
-        //console.log("Save:"+str);
-=======
->>>>>>> 8840514f334b2ba6d08da9c7b794b15b651f49cc
         /* Encode String */
         str=utf8_to_b64(str)+'!END!';
 
@@ -366,7 +285,6 @@ Game.Construct = function()
     }
     function gHandleClick() 
     {
-        gCookieNumberAdd("Hahaahah");
         if (new Date().getTime()-Game.lastClick<1000/250)
         {} 
         else {

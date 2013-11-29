@@ -1,11 +1,11 @@
 var Game = {};
 var Inv = {};
 Inv.Init = function() {
-    Inv.size = 32;
+    Inv.size = 30;
     Inv.numRows = 0;
-    Inv.topImg = "inv_top.png";
-    Inv.rowImg = "inv_row.png";
-    Inv.botImg = "inv_bot.png";
+    Inv.topImg = "inv_top_2.png";
+    Inv.rowImg = "row_box.png";
+    Inv.botImg = "inv_bot_2.png";
     Inv.slotImg = "inv_slot.png";
     Inv.items = [];
 
@@ -156,9 +156,10 @@ Game.Construct = function()
                   'target.png',
                   'shine.png',
                   'storetile.jpg',
-                  'inv_top.png',
-                  'inv_row.png',
-                  'inv_bot.png',
+                  'inv_top_2.png',
+                  'row_box.png',
+                  'row_box_off.png',
+                  'inv_bot_2.png',
                   'orbisship.png',
                   'drugs.png',
                   'inv_slot.png',
@@ -299,9 +300,9 @@ Game.Construct = function()
         var row_img = Game.assets[Inv.rowImg];
         var mid_div = get("inv-body");
         
-        while(Inv.numRows < Inv.size/16) {
+        while(Inv.numRows < Inv.size) {
             var row = document.createElement('img');
-            row.src = "assets/img/inv_row.png";
+            row.src = "assets/img/row_box.png";
             mid_div.appendChild(row);
             Inv.numRows++;
         }

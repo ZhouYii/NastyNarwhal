@@ -534,13 +534,7 @@ Store.Construct = function()
             }
         break;
     }
-    /*
-    for(var i = 0; i < Store.productList.length; i++)
-    {
-        AddProduct(Store.productList[i].productName, folder+'product'+i+'.png');
-        Store.productList[i].active = false;
-    }
-
+    
     var ProductBar = get('products');
     newDiv = document.createElement('div');
     newDiv.innerHTML = '<br><br><br><br><br>';

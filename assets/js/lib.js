@@ -79,7 +79,7 @@ function removeItem(item) {
     if(item == null || Inv.items == null)
        return false;
     for(var i = 0 ; i < Inv.items.length; i++) {
-        if(Inv.items[0].name == item.name && Inv.items[0].id == item.id) {
+        if(Inv.items[i].name == item.name && Inv.items[i].id == item.id) {
             Inv.items.splice(i, 1);
             item.image.parentNode.removeChild(item.image);
             Inv.updateCapacity();
@@ -95,6 +95,7 @@ function generate_item(itemName, itemImage, useCallback) {
     item.id = Math.random();
     item.image = document.createElement("img");
     item.image.src = "assets/img/"+itemImage;
+    item.image.id = item.id;
     item.useMe = useCallback;
     item.image.onclick = function() {
         if(!removeItem(item))

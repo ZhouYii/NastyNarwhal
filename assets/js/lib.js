@@ -69,8 +69,9 @@ function InvRedrawItems(){
 }
 
 function InvAddItem(item) {
-    if(Inv.items.length < Inv.size)
+    if(Inv.items.length < Inv.size) 
         Inv.items.push(item);
+    Inv.updateCapacity();
 }
 
 
@@ -80,8 +81,8 @@ function removeItem(item) {
     for(var i = 0 ; i < Inv.items.length; i++) {
         if(Inv.items[0].name == item.name && Inv.items[0].id == item.id) {
             Inv.items.splice(i, 1);
-            console.log(item.image.parentNode);
             item.image.parentNode.removeChild(item.image);
+            Inv.updateCapacity();
             return true;
         }
     }

@@ -29,6 +29,7 @@ Inv.Init = function() {
 };
 Game.Construct = function() 
 {
+    Game.unlockedBackgrounds = [];
     Game.initialized = 0;
     Game.T = 0;
     Game.drawT = 0;
@@ -52,6 +53,9 @@ Game.Construct = function()
     Game.BigCookieSize = 0;
     Game.clicks = 0;
     Game.recalculateEarnRate = 1;
+
+    unlockBackground("background_img.jpg");
+    //unlockBackground("orbisship.png");
     Inv.Init();
     gLoad();
     gLoadAssets();
@@ -82,6 +86,7 @@ Game.Construct = function()
                   'inv_top.png',
                   'inv_row.png',
                   'inv_bot.png',
+                  'orbisship.png',
                   'drugs.png',
                   'inv_slot.png',
                   'background_img.jpg'
@@ -235,9 +240,12 @@ Game.Construct = function()
             Game.earningsPerSec = parseFloat(p1[6]);
 
             var p2 = str[1].split(';');
-            console.log(str);
             for(var i = 0 ; i < p2.length; i++) {
                 generate_item(p2[i]);
+            }
+            var p3 = str[2].split(';');
+            for(var i = 0 ; i < p3.length; i++) {
+                unlockBackground(p3[i]);
             }
 
         }
@@ -261,6 +269,12 @@ Game.Construct = function()
             str += Inv.items[i].name + ";";
             /* Maybe store power later */
         }
+        str += '|';
+        /* Save all unlocked backgrounds TODO: save current, generate objects for noncurrent*/
+        for(var i = 0 ; i < Game.unlockedBackgrounds.length; i++) {
+            str += Game.unlockedBackgrounds[i].name + ";";
+        }
+        console.log(str);
         /* Encode String */
         str=utf8_to_b64(str)+'!END!';
 

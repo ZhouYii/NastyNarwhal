@@ -135,6 +135,35 @@ function InvUpdateCapacity() {
         size = 0;
 
     target.innerHTML = "Inventory ("+size+"/"+Inv.size+")";
-};
+}
 
+function unlockBackground(img_name) {
+    if(backgroundUnlocked(img_name) != false)
+      return;
+    var tmp = {};
+    tmp.name = img_name;
+    switch(img_name) {
+        case "background_img.jpg" :
+            tmp.func = aDefaultBg;
+            break;
+        case "orbisship.png" :
+            tmp.func = aOrbisShip;
+            break;
+    }
+    if(tmp.func != null) {
+        Game.unlockedBackgrounds.push(tmp)
+    }
 
+}
+
+/* Returns false if background has not been unlocked. Otherwise returns reference to the 
+ * background object */
+function backgroundUnlocked(img_name) {
+        if(Game.unlockedBackgrounds == null)
+            return false;
+        for(var i = 0 ; i < Game.unlockedBackgrounds.length ; i++) {
+            if(Game.unlockedBackgrounds[i].name == img_name)
+              return Game.unlockedBackgrounds[i];
+        }
+        return false;
+}

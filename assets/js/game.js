@@ -44,7 +44,7 @@ Game.Construct = function()
     Game.totalEarnings = 0;
     Game.earningsPerSec = 0.0;
     Game.dateStarted = parseInt(new Date().getTime());
-    Game.theme = "maplestory";
+    Game.theme = "pokemon";
 
     Game.time = new Date().getTime();
     Game.lastClick = 0;
@@ -314,6 +314,9 @@ function StoreProduct(name, baseCost)
 maplestoryProducts = ['Blue Snail', 'Ribbon Pig', 'Pet Panda', 'Horse Mount', 'Dinodon', 
                     'Master Robo', 'Pet Dragon', 'Grendel The Really Old', 'Great Spirit', 'Puri Puri'];
 
+pokemonProducts = ['Bulbasaur', 'Charmandar', 'Squirtle', 'Venusaur', 'Charizard', 'Blastoise',
+                    'Articuno', 'Raikou', 'Mewtwo', 'Pichu'];
+
 var Store = {};
 Store.Construct = function()
 {
@@ -325,18 +328,41 @@ Store.Construct = function()
         case 'maplestory':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(maplestoryProducts[i], 50 + Math.pow(i,5) * 30);
+                Store.productList[i] = new StoreProduct(maplestoryProducts[i], 50 + Math.pow(i,7) * 30);
+            }
+
+            for(var i = 0; i < Store.productList.length; i++)
+            {
+                AddProduct(Store.productList[i].productName, folder+'product'+i+'.png');
+                get(removeSpaces(Store.productList[i].productName)+'product').alt = i;
+                Store.productList[i].active = false;
+                console.log(Store.productList[i].active);
+            }
+        break;
+
+        case 'pokemon':
+            for(var i = 0; i < 10; i++)
+            {
+                Store.productList[i] = new StoreProduct(pokemonProducts[i], 50 + Math.pow(i,7) * 40);
+                
+            }
+            for(var i = 0; i < Store.productList.length; i++)
+            {
+                AddProduct(Store.productList[i].productName, folder+'product'+i+'.gif');
+                get(removeSpaces(Store.productList[i].productName)+'product').alt = i;
+                Store.productList[i].active = false;
+                console.log(Store.productList[i].active);
             }
         break;
     }
-
+    /*
     for(var i = 0; i < Store.productList.length; i++)
     {
         AddProduct(Store.productList[i].productName, folder+'product'+i+'.png');
         get(removeSpaces(Store.productList[i].productName)+'product').alt = i;
         Store.productList[i].active = false;
         console.log(Store.productList[i].active);
-    }
+    } */
 
     var ProductBar = get('products');
     newDiv = document.createElement('div');

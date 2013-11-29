@@ -29,11 +29,13 @@ Inv.Init = function() {
 };
 Game.Construct = function() 
 {
+    Game.unlockedBackgrounds = [];
+    Game.currentTarget = null;
+    Game.baseTarget = "big/basic.png";
     Game.initialized = 0;
     Game.T = 0;
     Game.drawT = 0;
     Game.fps = 30;
-    Game.defaultBg = 'background_img.jpg';
     Game.targetX=0;
     Game.targetY=0;
     Game.saveName = "theGame";
@@ -68,10 +70,11 @@ Game.Construct = function()
     Game.currentBg = backgroundUnlocked("background_img.jpg");
     gLoadAssets();
     gLoad();
-    gLoadAssets();
     /* Set listeners for the click target */
     gInitClickTarget();
     Store.Construct();
+    if(Game.currentTarget==null)
+        gSetCurrTarget(Game.baseTarget);
     gMain();
 
     
@@ -137,7 +140,18 @@ Game.Construct = function()
     function gEarn (amt) {Game.totalEarnings += amt; Game.currency += amt;};
     function gLoadAssets () {
         Game.assets = {};
-        var pics=[
+        /* The things we click */
+        var targets=['big/opt1.png',
+                  'big/basic.png'
+                 ];
+        for(var i = 0; i < targets.length; i++) {
+            var img = new Image();
+            img.source = "assets/img/"+targets[i];
+            Game.assets[targets[i]] = img;
+            gLoadTarget(targets[i]);
+        }
+        var pics=['big/opt1.png',
+                  'big/basic.png',
                   'blackGradient.png',
                   'shadedBorders.png',
                   'target.png',
@@ -146,6 +160,7 @@ Game.Construct = function()
                   'inv_top.png',
                   'inv_row.png',
                   'inv_bot.png',
+                  'orbisship.png',
                   'drugs.png',
                   'inv_slot.png',
                   'background_img.jpg'
@@ -155,6 +170,35 @@ Game.Construct = function()
             img.src = "assets/img/" + pics[i];
             img.onload = gDrawBackground;
             Game.assets[pics[i]] = img;
+        }
+    }
+
+    /* Load the assets for the click targets */
+    function gLoadTarget(filename) {
+        if(Game.targets == null)
+            Game.targets = [];
+        var tmp = {};
+        tmp.name = filename;
+        switch(filename) {
+            case "big/basic.png":
+                tmp.popName = "FactoryThingsRepaceMe";
+                tmp.vitality = 9999;
+                /* No implementation yet */
+                tmp.swapFunc = function(){};
+                tmp.convo = [""];
+                tmp.clickFunc = function(){};
+                break;
+            case "big/opt1.png":
+                tmp.popName = "Innocent Pikachu";
+                tmp.vitality = 35;
+                /* No implementation yet */
+                tmp.swapFunc = function(){};
+                tmp.convo = ["Pika!", "Pikapi!"];
+                tmp.clickFunc = function(){};
+                break;
+        }
+        if(tmp.vitality != null){
+            Game.targets.push(tmp);
         }
     }
 
@@ -206,7 +250,7 @@ Game.Construct = function()
         }
         if (Game.drawT%15==0) {
             var s1=600, s2=600, x=0, y=0;
-            Game.Background.fillPattern(Game.assets[Game.defaultBg],x,y,Game.Background.canvas.width,Game.Background.canvas.height,s1,s1); 
+            Game.Background.fillPattern(Game.assets[Game.currentBg.name],x,y,Game.Background.canvas.width,Game.Background.canvas.height,s1,s1); 
             Game.Background.drawImage(Game.assets['shadedBorders.png'],0,0,Game.Background.canvas.width,Game.Background.canvas.height); 
         }
 
@@ -228,7 +272,11 @@ Game.Construct = function()
         var s=256*Game.BigCookieSize;
         var x=Game.targetX-s/2;
         var y=Game.targetY-s/2;
-        Game.LeftBackground.drawImage(Game.assets['target.png'],x,y,s,s);
+        if(Game.currentTarget == null) {
+            Game.LeftBackground.drawImage(Game.assets['target.png'],x,y,s,s);
+        } else {
+            Game.LeftBackground.drawImage(Game.assets[Game.currentTarget.name],x,y,s,s);
+        }
     }
 
     function gDrawInventory() {
@@ -269,14 +317,13 @@ Game.Construct = function()
 
     function gMain() 
     {
+        /*Activate BG effects */
+        Game.currentBg.func();
         gDraw();
         if((Game.time%2) == 0)
             gCalcPS();
         if((Game.time%60) == 0)
             gSave();
-
-        refreshProducts();
-
         setTimeout(gMain,1000/Game.fps);
         Game.time++;
     }
@@ -291,17 +338,11 @@ Game.Construct = function()
             }
             str = str.split('!END!')[0];
             str = b64_to_utf8(str);
-<<<<<<< HEAD
             //console.log("load:"+str);
             str = str.split('|');
             /* Only have one part of save data : the state variables */
             var p1 = str[0].split(';');
             //console.log(p1);
-=======
-            str = str.split('|');
-            /* Only have one part of save data : the state variables */
-            var p1 = str[0].split(';');
->>>>>>> 8840514f334b2ba6d08da9c7b794b15b651f49cc
             Game.dateStarted = parseInt(p1[0]);
             Game.currency = parseInt(p1[1]);
             Game.totalEarnings = parseInt(p1[2]);
@@ -309,13 +350,22 @@ Game.Construct = function()
             Game.clickEarnings = parseInt(p1[4]);
             Inv.size = parseInt(p1[5]);
             Game.earningsPerSec = parseFloat(p1[6]);
+            unlockBackground(p1[7]);
+            Game.currentBg = backgroundUnlocked(p1[7]);
+            gSetCurrTarget(p1[8]);
+            if(Game.currentTarget != null)
+                Game.currentTarget.vitality = p1[9];
 
             var p2 = str[1].split(';');
-            console.log(str);
             for(var i = 0 ; i < p2.length; i++) {
-                generate_item(p2[i]);
+                /* Do not generate if bg currently in use */
+                if(p2[i] != p1[7])
+                    generate_item(p2[i]);
             }
-
+            var p3 = str[2].split(';');
+            for(var i = 0 ; i < p3.length; i++) {
+                unlockBackground(p3[i]);
+            }
         }
     }
 
@@ -331,21 +381,21 @@ Game.Construct = function()
         parseInt(Game.clickEarnings).toString()+';'+
         parseInt(Inv.size).toString()+';'+
         parseFloat(Game.earningsPerSec).toString()+';'+
+        Game.currentBg.name+";"+
+        Game.currentTarget.name+";"+
+        parseInt(Game.currentTarget.vitality)+";"+
         '|';
         /* Save all item names */
         for(var i = 0 ; i < Inv.items.length; i++) {
             str += Inv.items[i].name + ";";
             /* Maybe store power later */
         }
-<<<<<<< HEAD
         str += '|';
         /* Save all unlocked backgrounds TODO: save current, generate objects for noncurrent*/
         for(var i = 0 ; i < Game.unlockedBackgrounds.length; i++) {
             str += Game.unlockedBackgrounds[i].name + ";";
         }
         //console.log("Save:"+str);
-=======
->>>>>>> 8840514f334b2ba6d08da9c7b794b15b651f49cc
         /* Encode String */
         str=utf8_to_b64(str)+'!END!';
 
@@ -354,19 +404,33 @@ Game.Construct = function()
         now.setFullYear(now.getFullYear()+5);
         str=Game.saveName +'='+escape(str)+'; expires='+now.toUTCString()+';';
         document.cookie=str;
-        console.log("Saved");
     }
     /* Handles random events */
     function gGod() {
         var playerLuck = Math.random() * 100;
+        /* Drop an item */
         if(playerLuck > 30) {
             generate_item("Drugs");
         }
+        /* Switch to new encounter */
+        if(playerLuck > 80 && Game.currentTarget.name == Game.baseTarget) {
+            gRandomEncounter();
+        }
+        /* Target speaks */
+        if(playerLuck > 60 && Game.currentTarget != null) 
+            gCookieNumberAdd(rand_elem(Game.currentTarget.convo));
 
+    }
+
+    function gRandomEncounter() {
+        var index = Math.floor(Math.random() * Game.targets.length);
+        console.log(index);
+        var template = Game.targets[index];
+        console.log(template);
+        gCloneTarget(template);
     }
     function gHandleClick() 
     {
-        gCookieNumberAdd("Hahaahah");
         if (new Date().getTime()-Game.lastClick<1000/250)
         {} 
         else {
@@ -377,6 +441,36 @@ Game.Construct = function()
         }
         Game.clickEarnings += Game.mouseEarnRate;
         Game.lastClick=new Date().getTime();
+
+        if(Game.currentTarget == null || Game.currentTarget.vitality <= 0) {
+            gSetCurrTarget("big/basic.png");
+        } else {
+            /* Randomly kill off 1-3 vitality */
+            Game.currentTarget.vitality -= Math.ceil(3*Math.random());
+        }
+    }
+    function gSetCurrTarget(name) {
+        console.log("name:"+name);
+        if(Game.targets == null)
+            return;
+        for(var i = 0; i < Game.targets.length; i++) {
+            if(name == Game.targets[i].name) {
+                gCloneTarget(Game.targets[i]);
+                return true;
+            }
+        }
+    }
+
+    function gCloneTarget(template) {
+        if(template == null)
+            return;
+        Game.currentTarget = {};
+        Game.currentTarget.name = template.name;
+        Game.currentTarget.popName = template.popName;
+        Game.currentTarget.vitality = template.vitality;
+        Game.currentTarget.convo = template.convo;
+        Game.currentTarget.swapFunc = template.swapFunc;
+        Game.currentTarget.clickFunc = template.clickFunc;
     }
 
     /* TODO : Modify later for new buildings and achievements... etc */
@@ -407,7 +501,7 @@ Store.Construct = function()
         case 'maplestory':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(maplestoryProducts[i], 50 + Math.pow(i,5) * 30);
+                Store.productList[i] = new StoreProduct(maplestoryProducts[i], i * 10);
             }
         break;
     }
@@ -415,9 +509,7 @@ Store.Construct = function()
     for(var i = 0; i < Store.productList.length; i++)
     {
         AddProduct(Store.productList[i].productName, folder+'product'+i+'.png');
-        get(removeSpaces(Store.productList[i].productName)+'product').alt = i;
         Store.productList[i].active = false;
-        console.log(Store.productList[i].active);
     }
 
     var ProductBar = get('products');
@@ -427,64 +519,34 @@ Store.Construct = function()
 
 }
 
-function refreshProducts()
+function BuyProduct(productId)
 {
-    productList = document.getElementsByClassName('product');
-
-    for(var i = 0; i < 10; i++)
-    {
-        var len = productList[i].id.length;
-        var id = productList[i].id.slice(0, len-7)+'cost';
-        get(id).innerHTML = '<img src=\'assets/img/'+Game.theme+'/cash.png\'>' + Beautify(Store.productList[i].baseCost,0);
-
-        if(Store.productList[productList[i].alt].baseCost <= Game.currency)
-        {
-            get(productList[i].id).style.opacity = 1;
-            Store.productList[i].active = true;
-        }
-        else
-        {
-            get(productList[i].id).style.opacity = 0.4;
-            Store.productList[i].active = false;
-        }
-    }
-}
-
-function BuyProduct(productName)
-{
-
-    var index = get(removeSpaces(productName)+'product').alt;
-    if(Store.productList[index].active && Store.productList[index].baseCost <= Game.currency)
-    {
-        Game.currency -= Store.productList[index].baseCost;
-        Store.productList[index].baseCost *= 1.5;
-    }
+    console.log(productId);
+    get(productId).style.opacity='1';
 }
 
 function AddProduct(title, imageURL)
 {
     var productBar = get('products');
     productBar.backgroundColor= '#000';
+    var split = title.split(" ");
+    var id = "";
 
-    var id = removeSpaces(title);
+    for(var i = 0; i < split.length; i++)
+    {
+        id += split[i];
+    }
 
     var newDiv = document.createElement('div');
 
     var str;
     str = '<div class="product" id='+id+'product'+'><img src='+imageURL+'><h1 class="content">'+title+'</h1>';
-    str += '<span id='+id+'cost'+' class="cost"><img src=\'assets/img/'+Game.theme+'/cash.png\'></span></div>';
+    str += '<span class="cost"><img src=\'assets/img/'+Game.theme+'/cash.png\'></span></div>';
     str += NewTooltip(title);
     newDiv.innerHTML = str;
-    newDiv.onclick = function(){ BuyProduct(title); };
-
-    newDiv.onmouseover = function(){ printToolTip(title); };
+    newDiv.onclick = function(){ BuyProduct(id+'product'); };
 
     productBar.appendChild(newDiv);
-}
-
-function printToolTip(productName)
-{
-    get(removeSpaces(productName)+'tooltip').innerHTML = productName;
 }
 
 function AddUpgrade(title, imageURL)
@@ -502,20 +564,5 @@ function AddUpgrade(title, imageURL)
 
 function NewTooltip(str)
 {
-    var id = removeSpaces(str);
-
-    return '<div id=\''+id+'tooltip\' class="tooltip" style="height:64px;width:300px;"></div>';
-}
-
-function removeSpaces(str)
-{
-    var split = str.split(" ");
-    var newStr = "";
-
-    for(var i = 0; i < split.length; i++)
-    {
-        newStr += split[i];
-    }
-
-    return newStr;
+    return '<div class="tooltip" style="height:64px;width:300px;">'+str+'</div>';
 }

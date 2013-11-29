@@ -34,7 +34,6 @@ Game.Construct = function()
     Game.T = 0;
     Game.drawT = 0;
     Game.fps = 30;
-    Game.defaultBg = 'background_img.jpg';
     Game.targetX=0;
     Game.targetY=0;
     Game.saveName = "theGame";
@@ -53,10 +52,10 @@ Game.Construct = function()
     Game.BigCookieSize = 0;
     Game.clicks = 0;
     Game.recalculateEarnRate = 1;
+    Inv.Init();
 
     unlockBackground("background_img.jpg");
-    //unlockBackground("orbisship.png");
-    Inv.Init();
+    Game.currentBg = backgroundUnlocked("background_img.jpg");
     gLoad();
     gLoadAssets();
     /* Set listeners for the click target */
@@ -147,7 +146,7 @@ Game.Construct = function()
         }
         if (Game.drawT%15==0) {
             var s1=600, s2=600, x=0, y=0;
-            Game.Background.fillPattern(Game.assets[Game.defaultBg],x,y,Game.Background.canvas.width,Game.Background.canvas.height,s1,s1); 
+            Game.Background.fillPattern(Game.assets[Game.currentBg.name],x,y,Game.Background.canvas.width,Game.Background.canvas.height,s1,s1); 
             Game.Background.drawImage(Game.assets['shadedBorders.png'],0,0,Game.Background.canvas.width,Game.Background.canvas.height); 
         }
 
@@ -209,6 +208,8 @@ Game.Construct = function()
 
     function gMain() 
     {
+        /*Activate BG effects */
+        Game.currentBg.func();
         gDraw();
         if((Game.time%2) == 0)
             gCalcPS();
@@ -228,9 +229,11 @@ Game.Construct = function()
             }
             str = str.split('!END!')[0];
             str = b64_to_utf8(str);
+            console.log("load: "+str);
             str = str.split('|');
             /* Only have one part of save data : the state variables */
             var p1 = str[0].split(';');
+            console.log(p1);
             Game.dateStarted = parseInt(p1[0]);
             Game.currency = parseInt(p1[1]);
             Game.totalEarnings = parseInt(p1[2]);
@@ -238,10 +241,14 @@ Game.Construct = function()
             Game.clickEarnings = parseInt(p1[4]);
             Inv.size = parseInt(p1[5]);
             Game.earningsPerSec = parseFloat(p1[6]);
+            unlockBackground(p1[7]);
+            Game.currentBg = backgroundUnlocked(p1[7]);
 
             var p2 = str[1].split(';');
             for(var i = 0 ; i < p2.length; i++) {
-                generate_item(p2[i]);
+                /* Do not generate if bg currently in use */
+                if(p2[i] != p1[7])
+                    generate_item(p2[i]);
             }
             var p3 = str[2].split(';');
             for(var i = 0 ; i < p3.length; i++) {
@@ -263,6 +270,7 @@ Game.Construct = function()
         parseInt(Game.clickEarnings).toString()+';'+
         parseInt(Inv.size).toString()+';'+
         parseFloat(Game.earningsPerSec).toString()+';'+
+        Game.currentBg.name+";"+
         '|';
         /* Save all item names */
         for(var i = 0 ; i < Inv.items.length; i++) {
@@ -283,7 +291,6 @@ Game.Construct = function()
         now.setFullYear(now.getFullYear()+5);
         str=Game.saveName +'='+escape(str)+'; expires='+now.toUTCString()+';';
         document.cookie=str;
-        console.log("Saved");
     }
     /* Handles random events */
     function gGod() {

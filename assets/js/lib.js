@@ -6,6 +6,16 @@ function hide_div(div) {
     get(div).style.visibility = "hidden";
 }
 
+/* Heads or tails */
+function heads() {
+    if(Math.random() > 0.5) 
+        return true;
+    return false;
+}
+function rand(num) {
+    return Math.random() * num;
+}
+
 function show_div(div) {
     get(div).style.visibility = "";
 }
@@ -99,21 +109,16 @@ function removeItem(item) {
 
 
 function generate_item(name) {
-    var tmp;
-    switch(name)
-    {
-        case "Drugs":
-            tmp = _generate_item("Drugs", "drugs.png", aDrug);
+    /* use mapping to go from potential filename to real name */
+    var tmp, tmp2 = 0;
+    for(var i = 0 ; i < Game.itemList.length; i++) {
+        tmp = Game.itemList[i];
+        if(name == tmp.name || name == tmp.img) {
+            tmp = _generate_item(tmp.name, tmp.img, tmp.func);
             break;
-
-        /* Only generate a background item when it is swapped out */
-        case "background_img.jpg":
-        case "orbisship.png":
-            tmp = _generate_item(name, "background.png", 
-                                 function() {swapBg(name);});
-            break;
+        }
     }
-    if(tmp == null)
+    if(tmp.id == null)
         return;
     InvAddItem(tmp);
     InvRedrawItems();

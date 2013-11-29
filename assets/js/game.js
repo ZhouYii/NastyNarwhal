@@ -1,4 +1,56 @@
 var Game = {};
+var Inv = {};
+Inv.Init = function() {
+    Inv.size = 30;
+    Inv.numRows = 0;
+    Inv.topImg = "inv_top.png";
+    Inv.rowImg = "inv_row.png";
+    Inv.botImg = "inv_bot.png";
+    Inv.slotImg = "inv_slot.png";
+    Inv.items = [];
+
+    var bot_img = document.createElement('img');
+    bot_img.setAttribute("id", "inv-bot");
+    bot_img.src = "assets/img/"+Inv.botImg;
+    var top_img = document.createElement('img');
+    top_img.setAttribute("id", "inv-top");
+    top_img.src = "assets/img/"+Inv.topImg;
+    var mid_div = document.createElement('div');
+    mid_div.setAttribute("id", "inv-body");
+    var slots = document.createElement('div');
+    slots.setAttribute("id", "inv-slots");
+    mid_div.appendChild(slots);
+
+    var target = get("inv-anchor");
+    target.appendChild(top_img);
+    target.appendChild(mid_div);
+    target.appendChild(bot_img);
+
+    iSpawnInvSlots(Inv.size);
+
+    
+    function iAddItem(item) {
+        if(Inv.items.size < Inv.size)
+            Inv.items.push(item);
+    }
+
+    function iSpawnInvSlots(num) {
+        var slot_img = Game.assets[Inv.rowImg];
+        var target = get("inv-slots");
+        if(slot_img == null || target == null) {
+            console.log("Can't load elements for spawning inventory slot"+slot_img+target);
+            return;
+        }
+        for(var i = 0 ; i < num ; i ++ ) {
+            var elem = document.createElement('img');
+            elem.setAttribute("id", "inv-slot");
+            elem.src = "assets/img/"+Inv.slotImg;
+            target.appendChild(elem);
+        }
+        
+    }
+
+};
 Game.Construct = function() 
 {
     Game.initialized = 0;
@@ -49,6 +101,10 @@ Game.Construct = function()
                   'target.png',
                   'shine.png',
                   'storetile.jpg',
+                  'inv_top.png',
+                  'inv_row.png',
+                  'inv_bot.png',
+                  'inv_slot.png',
                   'background_img.jpg'
                   ];
         for(var i in pics) {
@@ -58,6 +114,7 @@ Game.Construct = function()
             Game.assets[pics[i]] = img;
         }
     }
+
     function gGetMouseCoords(e)
     {
         var posx=0;
@@ -85,24 +142,24 @@ Game.Construct = function()
         Game.mouseX=posx-x;//Math.min(Game.w,Math.max(0,posx-x));
         Game.mouseY=posy-y;//Math.min(Game.h,Math.max(0,posy-y));
     }
-
+    
+    function gRefreshFrameSize() {
+        Game.Background.canvas.width=screen.width;
+        Game.Background.canvas.height=screen.height;
+        Game.LeftBackground.canvas.width=Game.LeftBackground.canvas.parentNode.offsetWidth;
+        Game.LeftBackground.canvas.height=Game.LeftBackground.canvas.parentNode.offsetHeight;
+        /*Game.MidBackground.canvas.width=Game.MidBackground.canvas.parentNode.offsetWidth;
+        Game.MidBackground.canvas.height=Game.MidBackground.canvas.parentNode.offsetHeight;*/
+    }
     function gDrawBackground() {
         if (!Game.Background)
         {
             console.log("hi");
             Game.Background=get('backgroundCanvas').getContext('2d');
-            Game.Background.canvas.width=screen.width;
-            Game.Background.canvas.height=screen.height;
             Game.LeftBackground=get('backgroundLeftCanvas').getContext('2d');
-            Game.LeftBackground.canvas.width=Game.LeftBackground.canvas.parentNode.offsetWidth;
-            Game.LeftBackground.canvas.height=Game.LeftBackground.canvas.parentNode.offsetHeight;
-            window.addEventListener('resize', function(event)
-            {
-                Game.Background.canvas.width=screen.width;
-                Game.Background.canvas.height=screen.height;
-                Game.LeftBackground.canvas.width=Game.LeftBackground.canvas.parentNode.offsetWidth;
-                Game.LeftBackground.canvas.height=Game.LeftBackground.canvas.parentNode.offsetHeight;
-            });
+            //Game.MidBackground=get('backgroundMidCanvas').getContext('2d');
+            gRefreshFrameSize();
+            window.addEventListener('resize', gRefreshFrameSize());
         }
         if (Game.drawT%15==0) {
             var s1=600, s2=600, x=0, y=0;
@@ -131,10 +188,24 @@ Game.Construct = function()
         Game.LeftBackground.drawImage(Game.assets['target.png'],x,y,s,s);
     }
 
+    function gDrawInventory() {
+        /* If the middle canvas has not been initialized, initialize it */
+        var row_img = Game.assets[Inv.rowImg];
+        var mid_div = get("inv-body");
+        
+        while(Inv.numRows < Inv.size/16) {
+            var row = document.createElement('img');
+            row.src = "assets/img/inv_row.png";
+            mid_div.appendChild(row);
+            Inv.numRows++;
+        }
+    }
+
     function gDraw() 
     {
         gDrawBackground();
         gDrawCookie();
+        gDrawInventory();
         get("currency").innerHTML="You have " + Game.currency + " monies";
         Game.drawT++;
     }

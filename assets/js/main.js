@@ -1,8 +1,10 @@
 window.onload=function()
 {
     Game.Construct();
+    Inv.Init();
     get("no-js").innerHTML='<div class="title">Loading</div>';
     AddProduct('Test', 'assets/img/cursoricon.png');
+
 };
 
 function AddProduct(title, imageURL)
@@ -14,7 +16,6 @@ function AddProduct(title, imageURL)
 
 	var newProductImg = document.createElement('img');
 	newProductImg.src = imageURL;
-
 	var newProductContent = document.createElement('h1');
 	newProductContent.innerHTML = "Hello";
 	newProductContent.className = "content";

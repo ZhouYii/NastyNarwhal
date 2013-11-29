@@ -277,7 +277,12 @@ time, mark, audio, video {
 	background-image:url('../img/storeTile.jpg');
 
 }
-
+.zoneTitle
+{
+	text-align:center;
+	padding:8px;
+	width:100%;
+}
 .product img
 {
 	float:left;
@@ -313,6 +318,34 @@ time, mark, audio, video {
 	z-index:10000;
 }
 
+#inv-body, #inv-top, #inv-bot
+{   
+        position:relative;
+}
+
+#inv-anchor
+{
+        margin-left: 4%;
+        margin-right: 0px;
+        width:603px;
+}
+
+#inv-slots 
+{
+        top: 0;
+        left: 5;
+        position:absolute;
+}
+
+#inv-title
+{
+	left:0px;
+	top:15%;
+	width:100%;
+	text-align:center;
+	z-index:200;
+	padding:2px 0px;
+}
 #currency
 {
 	position:absolute;

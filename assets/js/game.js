@@ -25,18 +25,13 @@ Inv.Init = function() {
     target.appendChild(top_img);
     target.appendChild(mid_div);
     target.appendChild(bot_img);
-
-    iSpawnInvSlots(Inv.size);
-
     
-    function iAddItem(item) {
-        if(Inv.items.size < Inv.size)
-            Inv.items.push(item);
-    }
+    var drugItem = generate_item("Drugs", "drugs.png", function(){console.log("used");});
+    InvAddItem(drugItem);
+    InvRedrawItems();
 
     function iSpawnInvSlots(num) {
         var slot_img = Game.assets[Inv.rowImg];
-        var target = get("inv-slots");
         if(slot_img == null || target == null) {
             console.log("Can't load elements for spawning inventory slot"+slot_img+target);
             return;
@@ -44,7 +39,7 @@ Inv.Init = function() {
         for(var i = 0 ; i < num ; i ++ ) {
             var elem = document.createElement('img');
             elem.setAttribute("id", "inv-slot");
-            elem.src = "assets/img/"+Inv.slotImg;
+            elem.src = "assets/img/drugs.png";
             target.appendChild(elem);
         }
         
@@ -104,10 +99,11 @@ Game.Construct = function()
                   'inv_top.png',
                   'inv_row.png',
                   'inv_bot.png',
+                  'drugs.png',
                   'inv_slot.png',
                   'background_img.jpg'
                   ];
-        for(var i in pics) {
+        for(var i = 0 ; i < pics.length; i++) {
             var img = new Image();
             img.src = "assets/img/" + pics[i];
             img.onload = gDrawBackground;
@@ -261,11 +257,23 @@ Game.Construct = function()
         document.cookie=str;
         console.log("Saved");
     }
+    /* Handles random events */
+    function gGod() {
+        var playerLuck = Math.random() * 100;
+        if(playerLuck > 30) {
+            var drugItem = generate_item("Drugs", "drugs.png", function(){console.log("used");});
+            InvAddItem(drugItem);
+            InvRedrawItems();
+        }
+            
+
+    }
     function gHandleClick() 
     {
         if (new Date().getTime()-Game.lastClick<1000/250)
         {} 
         else {
+            gGod();
             gEarn(Game.mouseEarnRate);
             /* TODO : import functionality for Game.CookieNumbers add */
             Game.clicks++;

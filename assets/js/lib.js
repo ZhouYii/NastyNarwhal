@@ -60,3 +60,46 @@ function b64_to_utf8( str ) {
     return decodeURIComponent(escape(window.atob( str )));
 }
 
+function InvRedrawItems(){
+    var target = get("inv-slots");
+    for(var i = 0 ; i < Inv.items.length ; i++) {
+        if(Inv.items[i] != null)
+            target.appendChild(Inv.items[i].image);
+    }
+}
+
+function InvAddItem(item) {
+    if(Inv.items.length < Inv.size)
+        Inv.items.push(item);
+}
+
+
+function removeItem(item) {
+    if(item == null || Inv.items == null)
+       return false;
+    for(var i = 0 ; i < Inv.items.length; i++) {
+        if(Inv.items[0].name == item.name && Inv.items[0].id == item.id) {
+            Inv.items.splice(i, 1);
+            console.log(item.image.parentNode);
+            item.image.parentNode.removeChild(item.image);
+            return true;
+        }
+    }
+    return false;
+}
+
+function generate_item(itemName, itemImage, useCallback) {
+    var item = {};
+    item.name = itemName;
+    item.id = Math.random();
+    item.image = document.createElement("img");
+    item.image.src = "assets/img/"+itemImage;
+    item.useMe = useCallback;
+    item.image.onclick = function() {
+        if(!removeItem(item))
+            console.log("Failedto remove item");
+        item.useMe();
+        InvRedrawItems();
+    };
+    return item;
+}

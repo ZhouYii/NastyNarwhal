@@ -71,7 +71,7 @@ function InvRedrawItems(){
 function InvAddItem(item) {
     if(Inv.items.length < Inv.size) 
         Inv.items.push(item);
-    Inv.updateCapacity();
+    InvUpdateCapacity();
 }
 
 
@@ -82,14 +82,30 @@ function removeItem(item) {
         if(Inv.items[i].name == item.name && Inv.items[i].id == item.id) {
             Inv.items.splice(i, 1);
             item.image.parentNode.removeChild(item.image);
-            Inv.updateCapacity();
+            InvUpdateCapacity();
             return true;
         }
     }
     return false;
 }
 
-function generate_item(itemName, itemImage, useCallback) {
+function test() {}
+
+function generate_item(name) {
+    var tmp;
+    switch(name)
+    {
+        case "Drugs":
+             tmp = _generate_item("Drugs", "drugs.png", test);
+             break;
+    }
+    if(tmp == null)
+        return;
+    InvAddItem(tmp);
+    InvRedrawItems();
+}
+
+function _generate_item(itemName, itemImage, useCallback) {
     var item = {};
     item.name = itemName;
     item.id = Math.random();
@@ -105,3 +121,13 @@ function generate_item(itemName, itemImage, useCallback) {
     };
     return item;
 }
+
+function InvUpdateCapacity() {
+    var target = get("inv-title"), size = Inv.items.length;
+    if(size == null)
+        size = 0;
+
+    target.innerHTML = "Inventory ("+size+"/"+Inv.size+")";
+};
+
+

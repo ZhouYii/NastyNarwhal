@@ -1,7 +1,7 @@
 var Game = {};
 var Inv = {};
 Inv.Init = function() {
-    Inv.size = 30;
+    Inv.size = 32;
     Inv.numRows = 0;
     Inv.topImg = "inv_top.png";
     Inv.rowImg = "inv_row.png";
@@ -27,9 +27,12 @@ Inv.Init = function() {
     target.appendChild(bot_img);
 
     Inv.updateCapacity = function() {
-        var target = get("inv-title");
-        target.innerHTML = "Inventory ("+Inv.items.length+"/"+Inv.size+")";
-    }
+        var target = get("inv-title"), size = Inv.items.size;
+        if(size == null)
+            size = 0;
+
+        target.innerHTML = "Inventory ("+size+"/"+Inv.size+")";
+    };
 
 };
 Game.Construct = function() 
@@ -56,7 +59,7 @@ Game.Construct = function()
     Game.BigCookieSize = 0;
     Game.clicks = 0;
     Game.recalculateEarnRate = 1;
-
+    Inv.Init();
     gLoad();
     gLoadAssets();
     /* Set listeners for the click target */
@@ -220,6 +223,15 @@ Game.Construct = function()
             Game.totalEarnings = parseInt(p1[2]);
             Game.clicks = parseInt(p1[3]);
             Game.clickEarnings = parseInt(p1[4]);
+            console.log(parseInt(p1[5]));
+            Inv.size = parseInt(p1[5]);
+
+            var p2 = str[1].split(';');
+            console.log(str);
+            for(var i = 0 ; i < p2.length; i++) {
+                generate_item(p2[i]);
+            }
+
         }
     }
 
@@ -233,7 +245,13 @@ Game.Construct = function()
         parseInt(Game.totalEarnings).toString()+';'+
         parseInt(Math.floor(Game.clicks))+';'+
         parseInt(Game.clickEarnings).toString()+';'+
+        parseInt(Inv.size).toString()+';'+
         '|';
+        /* Save all item names */
+        for(var i = 0 ; i < Inv.items.length; i++) {
+            str += Inv.items[i].name + ";";
+            /* Maybe store power later */
+        }
         /* Encode String */
         str=utf8_to_b64(str)+'!END!';
 
@@ -248,9 +266,7 @@ Game.Construct = function()
     function gGod() {
         var playerLuck = Math.random() * 100;
         if(playerLuck > 30) {
-            var drugItem = generate_item("Drugs", "drugs.png", function(){console.log("used");});
-            InvAddItem(drugItem);
-            InvRedrawItems();
+            generate_item("Drugs");
         }
             
 

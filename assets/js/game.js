@@ -428,7 +428,7 @@ Game.Construct = function()
             generate_item("Drugs");
         }
         /* Switch to new encounter */
-        if(playerLuck > 80 && Game.currentTarget.name == Game.baseTarget) {
+        if(playerLuck > 90 && Game.currentTarget.name == Game.baseTarget) {
             gRandomEncounter();
         }
         /* Target speaks */

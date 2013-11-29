@@ -29,7 +29,6 @@ Inv.Init = function() {
 };
 Game.Construct = function() 
 {
-    Game.unlockedBackgrounds = [];
     Game.initialized = 0;
     Game.T = 0;
     Game.drawT = 0;
@@ -54,9 +53,6 @@ Game.Construct = function()
     Game.BigCookieSize = 0;
     Game.clicks = 0;
     Game.recalculateEarnRate = 1;
-
-    unlockBackground("background_img.jpg");
-    //unlockBackground("orbisship.png");
     Inv.Init();
     gLoad();
     gLoadAssets();
@@ -87,7 +83,6 @@ Game.Construct = function()
                   'inv_top.png',
                   'inv_row.png',
                   'inv_bot.png',
-                  'orbisship.png',
                   'drugs.png',
                   'inv_slot.png',
                   'background_img.jpg'
@@ -215,6 +210,9 @@ Game.Construct = function()
             gCalcPS();
         if((Game.time%60) == 0)
             gSave();
+
+        refreshProducts();
+
         setTimeout(gMain,1000/Game.fps);
         Game.time++;
     }
@@ -241,12 +239,9 @@ Game.Construct = function()
             Game.earningsPerSec = parseFloat(p1[6]);
 
             var p2 = str[1].split(';');
+            console.log(str);
             for(var i = 0 ; i < p2.length; i++) {
                 generate_item(p2[i]);
-            }
-            var p3 = str[2].split(';');
-            for(var i = 0 ; i < p3.length; i++) {
-                unlockBackground(p3[i]);
             }
 
         }
@@ -270,12 +265,6 @@ Game.Construct = function()
             str += Inv.items[i].name + ";";
             /* Maybe store power later */
         }
-        str += '|';
-        /* Save all unlocked backgrounds TODO: save current, generate objects for noncurrent*/
-        for(var i = 0 ; i < Game.unlockedBackgrounds.length; i++) {
-            str += Game.unlockedBackgrounds[i].name + ";";
-        }
-        console.log(str);
         /* Encode String */
         str=utf8_to_b64(str)+'!END!';
 
@@ -336,7 +325,7 @@ Store.Construct = function()
         case 'maplestory':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(maplestoryProducts[i], i * 10);
+                Store.productList[i] = new StoreProduct(maplestoryProducts[i], 50 + Math.pow(i,4) * 30);
             }
         break;
     }
@@ -344,7 +333,9 @@ Store.Construct = function()
     for(var i = 0; i < Store.productList.length; i++)
     {
         AddProduct(Store.productList[i].productName, folder+'product'+i+'.png');
+        get(removeSpaces(Store.productList[i].productName)+'product').alt = i;
         Store.productList[i].active = false;
+        console.log(Store.productList[i].active);
     }
 
     var ProductBar = get('products');
@@ -354,34 +345,64 @@ Store.Construct = function()
 
 }
 
-function BuyProduct(productId)
+function refreshProducts()
 {
-    console.log(productId);
-    get(productId).style.opacity='1';
+    productList = document.getElementsByClassName('product');
+
+    for(var i = 0; i < 10; i++)
+    {
+        var len = productList[i].id.length;
+        var id = productList[i].id.slice(0, len-7)+'cost';
+        get(id).innerHTML = '<img src=\'assets/img/'+Game.theme+'/cash.png\'>' + Beautify(Store.productList[i].baseCost,0);
+
+        if(Store.productList[productList[i].alt].baseCost <= Game.currency)
+        {
+            get(productList[i].id).style.opacity = 1;
+            Store.productList[i].active = true;
+        }
+        else
+        {
+            get(productList[i].id).style.opacity = 0.4;
+            Store.productList[i].active = false;
+        }
+    }
+}
+
+function BuyProduct(productName)
+{
+
+    var index = get(removeSpaces(productName)+'product').alt;
+    if(Store.productList[index].active && Store.productList[index].baseCost <= Game.currency)
+    {
+        Game.currency -= Store.productList[index].baseCost;
+        Store.productList[index].baseCost *= 1.5;
+    }
 }
 
 function AddProduct(title, imageURL)
 {
     var productBar = get('products');
     productBar.backgroundColor= '#000';
-    var split = title.split(" ");
-    var id = "";
 
-    for(var i = 0; i < split.length; i++)
-    {
-        id += split[i];
-    }
+    var id = removeSpaces(title);
 
     var newDiv = document.createElement('div');
 
     var str;
     str = '<div class="product" id='+id+'product'+'><img src='+imageURL+'><h1 class="content">'+title+'</h1>';
-    str += '<span class="cost"><img src=\'assets/img/'+Game.theme+'/cash.png\'></span></div>';
+    str += '<span id='+id+'cost'+' class="cost"><img src=\'assets/img/'+Game.theme+'/cash.png\'></span></div>';
     str += NewTooltip(title);
     newDiv.innerHTML = str;
-    newDiv.onclick = function(){ BuyProduct(id+'product'); };
+    newDiv.onclick = function(){ BuyProduct(title); };
+
+    newDiv.onmouseover = function(){ printToolTip(title); };
 
     productBar.appendChild(newDiv);
+}
+
+function printToolTip(productName)
+{
+    get(removeSpaces(productName)+'tooltip').innerHTML = productName;
 }
 
 function AddUpgrade(title, imageURL)
@@ -399,5 +420,20 @@ function AddUpgrade(title, imageURL)
 
 function NewTooltip(str)
 {
-    return '<div class="tooltip" style="height:64px;width:300px;">'+str+'</div>';
+    var id = removeSpaces(str);
+
+    return '<div id=\''+id+'tooltip\' class="tooltip" style="height:64px;width:300px;"></div>';
+}
+
+function removeSpaces(str)
+{
+    var split = str.split(" ");
+    var newStr = "";
+
+    for(var i = 0; i < split.length; i++)
+    {
+        newStr += split[i];
+    }
+
+    return newStr;
 }

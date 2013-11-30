@@ -753,7 +753,7 @@ function BuyProduct(productName, type)
 
         if(Store.productList[index].active && Store.productList[index].baseCost <= Game.currency)
         {
-            Game.earningsPerSec += ((Math.pow(index + 1, 5) * .3)) + 1;
+            Game.earningsPerSec += Math.ceil(((Math.pow(index + 1, 5) * .05)) + 1);
             Game.currency -= Store.productList[index].baseCost;
             Store.productList[index].baseCost *= 1.5;
             generateUpgrade(Store.productList[index].probability); 

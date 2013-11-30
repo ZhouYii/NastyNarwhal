@@ -650,7 +650,8 @@ Store.Construct = function()
     {
 
         Store.productList = [];
-        Store.upgradeList = [new StoreUpgrade('currency', 0, 0)];
+        Store.upgradeList = [new StoreUpgrade('currency', 0, 0),
+                             new StoreUpgrade('theme', 0, 1000)];
         Store.currentUpgrades = [];
         Store.rebuild = true;
     }
@@ -668,7 +669,7 @@ Store.Construct = function()
         case 'maplestory':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(maplestoryProducts[i], 50 + Math.pow(i,7) * 30 , (1 - Math.pow(0.90, i + 1)) );
+                Store.productList[i] = new StoreProduct(maplestoryProducts[i], 50 + Math.exp(Math.pow(i + 1,1.3)) * 30 , (1 - Math.pow(0.90, i + 1)) );
             }
 
             for(var i = 0; i < Store.productList.length; i++)
@@ -676,14 +677,13 @@ Store.Construct = function()
                 AddProduct(Store.productList[i].productName, folder+'product'+i+'.png');
                 get(removeSpaces(Store.productList[i].productName)+'product').alt = i;
                 Store.productList[i].active = false;
-                console.log(Store.productList[i].active);
             }
         break;
 
         case 'pokemon':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(pokemonProducts[i], 50 + Math.pow(i,7) * 40, (1 - Math.pow(0.93, i + 1)) );
+                Store.productList[i] = new StoreProduct(pokemonProducts[i], 50 + Math.exp(Math.pow(i + 1,1.3)) * 40, (1 - Math.pow(0.93, i + 1)) );
             }
 
             for(var i = 0; i < Store.productList.length; i++)
@@ -753,6 +753,7 @@ function BuyProduct(productName, type)
 
         if(Store.productList[index].active && Store.productList[index].baseCost <= Game.currency)
         {
+            Game.earningsPerSec += ((Math.pow(index + 1, 5) * .3)) + 1;
             Game.currency -= Store.productList[index].baseCost;
             Store.productList[index].baseCost *= 1.5;
             generateUpgrade(Store.productList[index].probability); 
@@ -825,6 +826,21 @@ function useUpgrade(index)
         case 'currency':
             Game.currency += 1000 * (Store.currentUpgrades[index].number + 1);
         break;
+
+        case 'theme':
+
+            if(Game.theme == 'pokemon')
+            {
+                Game.theme = 'maplestory';
+            }
+
+            else if(Game.theme == 'maplestory')
+            {
+                Game.theme = 'pokemon';
+            }
+
+            Store.destroyAndRebuild();
+        break;
     }
 }
 
@@ -842,7 +858,12 @@ function AddUpgrade(title, imageURL)
     newDiv.setAttribute('id','upgrade'+title);
     str = '<img src='+imageURL+'><span id=\'upgrade'+title+'ttp\'class="tooltip2"></span>';
     newDiv.innerHTML = str;
-    newDiv.onmouseover = function(){ get('upgrade'+title+'ttp').innerHTML ='Cost:'+Store.currentUpgrades[title].baseCost; };
+    newDiv.onmouseover = function(){ 
+        if(Store.currentUpgrades[title].baseCost <= Game.currency)
+            get('upgrade'+title+'ttp').innerHTML ='<span style="color:white;"> Cost:'+Store.currentUpgrades[title].baseCost+'</span>';
+        else
+            get('upgrade'+title+'ttp').innerHTML ='<span style="color:red;"> Cost:'+Store.currentUpgrades[title].baseCost+'</span>';
+         };
     newDiv.onclick = function(){ BuyProduct('upgrade'+title, 'upgrade'); };
 
     upgradeBar.appendChild(newDiv);

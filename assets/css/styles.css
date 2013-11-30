@@ -346,6 +346,15 @@ time, mark, audio, video {
 	background-image:url('../img/upgradeFrame.png');
 }
 
+.upgrade img
+{
+	width: 40px;
+	height: 40px;
+	position: relative;
+	bottom: 5px;
+	right: 3px;
+}
+
 .tooltip2
 {
 	visibility: hidden;
@@ -355,12 +364,13 @@ time, mark, audio, video {
 {
 	visibility: visible;
 	position: relative;
-	bottom: 90%;
+	bottom: 60px;
 	right: 10px;
 	opacity: .5;
 	color: red;
 	background-color: black;
 	border: white dotted 2px;
+	z-index: 100;
 }
 
 #cookieAnchor

@@ -648,10 +648,14 @@ Store.Construct = function()
 {
     if(Store.rebuild == undefined)
     {
-
+        Store.inventoryCount = 0;
+        Store.backgroundCount = 0;
+        Store.themeCount = 0;
         Store.productList = [];
         Store.upgradeList = [new StoreUpgrade('currency', 0, 0),
-                             new StoreUpgrade('theme', 0, 1000)];
+                             new StoreUpgrade('theme', 0, 1000000),
+                             new StoreUpgrade('background', 0, 100000),
+                             new StoreUpgrade('inventory', 0, 200000)];
         Store.currentUpgrades = [];
         Store.rebuild = true;
     }
@@ -708,6 +712,16 @@ function generateUpgrade(probability)
     if (Store.currentUpgrades.length < 20 && luck <= probability)
     {
         var newUpgrade = randomUpgrade();
+
+        if( newUpgrade.UpgradeType == 'background')
+            Store.backgroundCount = 1;
+
+        if( newUpgrade.UpgradeType == 'inventory')
+            Store.inventoryCount = 1;
+
+        if( newUpgrade.UpgradeType == 'theme')
+            Store.themeCount = 1;
+
         AddUpgrade(Store.currentUpgrades.length, 'assets/img/upgrades/'+newUpgrade.UpgradeType+newUpgrade.number+'.png');
         Store.currentUpgrades.push(newUpgrade);
     }
@@ -718,7 +732,18 @@ function randomUpgrade()
     var z = Math.random();
     var size = Store.upgradeList.length;
 
-    return Store.upgradeList[Math.floor(z * size)];
+    var newUpgrade = Store.upgradeList[Math.floor(z * size)];
+
+    if(newUpgrade.UpgradeType == 'background' && Store.backgroundCount == 1)
+            return Store.upgradeList[0];
+
+    if (newUpgrade.UpgradeType == 'inventory' && Store.inventoryCount == 1)
+            return Store.upgradeList[0];
+
+    if (newUpgrade.UpgradeType == 'theme' && Store.themeCount == 1)
+            return Store.upgradeList[0];
+
+    return newUpgrade;
 }
 
 
@@ -840,6 +865,16 @@ function useUpgrade(index)
             }
 
             Store.destroyAndRebuild();
+        break;
+
+        case 'background':
+            console.log('Change the background');
+            Store.backgroundCount = 0;
+        break;
+
+        case 'inventory':
+            cosole.log('Increse inventory size by'+ (index+1));
+            Store.inventoryCount = 0;
         break;
     }
 }

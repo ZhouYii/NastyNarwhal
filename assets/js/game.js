@@ -46,7 +46,7 @@ Game.Construct = function()
     Game.totalEarnings = 0;
     Game.earningsPerSec = 0.0;
     Game.dateStarted = parseInt(new Date().getTime());
-    Game.theme = "pokemon";
+    Game.theme = 'pokemon';
 
     Game.time = new Date().getTime();
     Game.lastClick = 0;
@@ -499,22 +499,33 @@ Game.Construct = function()
     }
 };
 
-function StoreProduct(name, baseCost)
+function StoreProduct(name, baseCost, probability)
 {
     this.productName = name;
     this.baseCost = baseCost;
+    this.probability = probability;
 }
 
-maplestoryProducts = ['Blue Snail', 'Ribbon Pig', 'Pet Panda', 'Horse Mount', 'Dinodon', 
+function StoreUpgrade(UpgradeType, number, baseCost)
+{
+    this.UpgradeType = UpgradeType;
+    this.number = number;
+    this.baseCost = baseCost;
+}
+
+
+var maplestoryProducts = ['Blue Snail', 'Ribbon Pig', 'Pet Panda', 'Horse Mount', 'Dinodon', 
                     'Master Robo', 'Pet Dragon', 'Grendel The Really Old', 'Great Spirit', 'Puri Puri'];
 
-pokemonProducts = ['Bulbasaur', 'Charmandar', 'Squirtle', 'Venusaur', 'Charizard', 'Blastoise',
+var pokemonProducts = ['Bulbasaur', 'Charmandar', 'Squirtle', 'Venusaur', 'Charizard', 'Blastoise',
                     'Articuno', 'Raikou', 'Mewtwo', 'Pichu'];
 
 var Store = {};
 Store.Construct = function()
 {
     Store.productList = [];
+    Store.upgradeList = [{UpgradeType:'currency', number:0, baseCost:100}];
+
     var folder = 'assets/img/'+Game.theme+'/';
 
     switch(Game.theme)
@@ -522,7 +533,7 @@ Store.Construct = function()
         case 'maplestory':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(maplestoryProducts[i], 50 + Math.pow(i,7) * 30);
+                Store.productList[i] = new StoreProduct(maplestoryProducts[i], 50 + Math.pow(i,7) * 30 , (1 - Math.pow(0.90, i + 1)) );
             }
 
             for(var i = 0; i < Store.productList.length; i++)
@@ -537,15 +548,14 @@ Store.Construct = function()
         case 'pokemon':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(pokemonProducts[i], 50 + Math.pow(i,7) * 40);
-                
+                Store.productList[i] = new StoreProduct(pokemonProducts[i], 50 + Math.pow(i,7) * 40, (1 - Math.pow(0.93, i + 1)) );
             }
+
             for(var i = 0; i < Store.productList.length; i++)
             {
                 AddProduct(Store.productList[i].productName, folder+'product'+i+'.gif');
                 get(removeSpaces(Store.productList[i].productName)+'product').alt = i;
                 Store.productList[i].active = false;
-                console.log(Store.productList[i].active);
             }
         break;
     }
@@ -556,6 +566,26 @@ Store.Construct = function()
     ProductBar.appendChild(newDiv);
 
 }
+
+
+function generateUpgrade(probability)
+{
+    var luck = Math.random();
+    if (luck <= probability)
+    {
+        var newUpgrade = randomUpgrade();
+        AddUpgrade('Test', 'assets/img/upgrades/'+newUpgrade.UpgradeType+newUpgrade.number+'.png');
+    }
+}
+
+function randomUpgrade()
+{
+    var z = Math.random();
+    var size = Store.upgradeList.length;
+
+    return Store.upgradeList[Math.floor(z * size)];
+}
+
 
 function refreshProducts()
 {
@@ -588,6 +618,8 @@ function BuyProduct(productName)
     {
         Game.currency -= Store.productList[index].baseCost;
         Store.productList[index].baseCost *= 1.5;
+        generateUpgrade(Store.productList[index].probability); 
+        Store.productList[index].probability += (Store.productList[index].probability*0.03);
     }
 }
 
@@ -623,7 +655,7 @@ function AddUpgrade(title, imageURL)
 
     var newDiv = document.createElement('div');
     newDiv.className='upgrade';
-    newDiv.setAttribute('id',title+upgrade);
+    newDiv.setAttribute('id',title+'upgrade');
     str = '<img src='+imageURL+'>';
     newDiv.innerHTML = str;
 

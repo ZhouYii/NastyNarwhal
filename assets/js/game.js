@@ -453,6 +453,8 @@ function gGetMouseCoords(e)
         if((Game.time%60) == 0)
             gSave();
 
+        document.title = 'Money: ' + Beautify(Game.currency,0);
+
         refreshProducts();
 
         setTimeout(gMain,1000/Game.fps);
@@ -635,8 +637,8 @@ function StoreUpgrade(UpgradeType, number, baseCost)
 }
 
 
-var maplestoryProducts = ['Blue Snail', 'Ribbon Pig', 'Pet Panda', 'Horse Mount', 'Dinodon', 
-                    'Master Robo', 'Pet Dragon', 'Grendel The Really Old', 'Great Spirit', 'Puri Puri'];
+var maplestoryProducts = ['Blue Snail', 'Ribbon Pig', 'Pet Panda', 'Horse Mount',  'Master Robo', 
+                    'Dinodon','Pet Dragon', 'Grendel The Really Old', 'Great Spirit', 'Puri Puri'];
 
 var pokemonProducts = ['Bulbasaur', 'Charmandar', 'Squirtle', 'Venusaur', 'Charizard', 'Blastoise',
                     'Articuno', 'Raikou', 'Mewtwo', 'Pichu'];
@@ -801,7 +803,6 @@ function AddProduct(title, imageURL)
     str += NewTooltip(title);
     newDiv.innerHTML = str;
     newDiv.onclick = function(){ BuyProduct(title, 'product'); };
-
     newDiv.onmouseover = function(){ printToolTip(title); };
 
     productBar.appendChild(newDiv);

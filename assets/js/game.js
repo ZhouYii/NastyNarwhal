@@ -228,6 +228,28 @@ Game.Construct = function()
                     entry.desc = "Makes it more likely to encounter new targets.";
                     entry.func = attractFunctor(2,5);
                     break;
+                case "items/kill1.png":
+                    entry.name = "Steely Throwing Knives";
+                    entry.desc = "Not homicide if it looks like an accident.";
+                    entry.func = aAssasinate;
+                    break;
+                case "items/luk2.png":
+                case "items/luk1.png":
+                    entry.name = "Luck Permit";
+                    entry.desc = "The law permits you to be more lucky";
+                    entry.func = itemLuckFunctor(3,2);
+                    break;
+                case "items/mon0.png":
+                case "items/mon1.png":
+                case "items/mon2.png":
+                case "items/mon3.png":
+                case "items/mon4.png":
+                case "items/mon5.png":
+                case "items/mon6.png":
+                    entry.name = "Moneybag";
+                    entry.desc = 'You "found" some money...';
+                    entry.func = moneyFunctor(50000,10);
+                    break;
                 case "items/nop1.png":
                 case "items/nop2.png":
                 case "items/nop4.png":
@@ -622,8 +644,20 @@ var pokemonProducts = ['Bulbasaur', 'Charmandar', 'Squirtle', 'Venusaur', 'Chari
 var Store = {};
 Store.Construct = function()
 {
-    Store.productList = [];
-    Store.upgradeList = [{UpgradeType:'currency', number:0, baseCost:100}];
+    if(Store.rebuild == undefined)
+    {
+
+        Store.productList = [];
+        Store.upgradeList = [new StoreUpgrade('currency', 0, 0)];
+        Store.currentUpgrades = [];
+        Store.rebuild = true;
+    }
+
+    Store.destroyAndRebuild = function()
+    {
+        get('products').innerHTML = "";
+        Store.Construct();
+    }
 
     var folder = 'assets/img/'+Game.theme+'/';
 
@@ -666,14 +700,14 @@ Store.Construct = function()
 
 }
 
-
 function generateUpgrade(probability)
 {
     var luck = Math.random();
-    if (luck <= probability)
+    if (Store.currentUpgrades.length < 20 && luck <= probability)
     {
         var newUpgrade = randomUpgrade();
-        AddUpgrade('Test', 'assets/img/upgrades/'+newUpgrade.UpgradeType+newUpgrade.number+'.png');
+        AddUpgrade(Store.currentUpgrades.length, 'assets/img/upgrades/'+newUpgrade.UpgradeType+newUpgrade.number+'.png');
+        Store.currentUpgrades.push(newUpgrade);
     }
 }
 
@@ -694,7 +728,7 @@ function refreshProducts()
     {
         var len = productList[i].id.length;
         var id = productList[i].id.slice(0, len-7)+'cost';
-        get(id).innerHTML = '<img src=\'assets/img/'+Game.theme+'/cash.png\'>' + Beautify(Store.productList[i].baseCost,0);
+        get(id).innerHTML = Beautify(Store.productList[i].baseCost,0);
 
         if(Store.productList[productList[i].alt].baseCost <= Game.currency)
         {
@@ -709,16 +743,46 @@ function refreshProducts()
     }
 }
 
-function BuyProduct(productName)
+function BuyProduct(productName, type)
 {
-
-    var index = get(removeSpaces(productName)+'product').alt;
-    if(Store.productList[index].active && Store.productList[index].baseCost <= Game.currency)
+    if(type == 'product')
     {
-        Game.currency -= Store.productList[index].baseCost;
-        Store.productList[index].baseCost *= 1.5;
-        generateUpgrade(Store.productList[index].probability); 
-        Store.productList[index].probability += (Store.productList[index].probability*0.03);
+        var index = get(removeSpaces(productName)+'product').alt;
+
+        if(Store.productList[index].active && Store.productList[index].baseCost <= Game.currency)
+        {
+            Game.currency -= Store.productList[index].baseCost;
+            Store.productList[index].baseCost *= 1.5;
+            generateUpgrade(Store.productList[index].probability); 
+            Store.productList[index].probability += (Store.productList[index].probability*0.03);
+        }
+    }
+
+    else if(type == 'upgrade')
+    {
+        var toBuy = get(productName);
+        var index = Number(toBuy.id.slice(7, productName.length));
+
+        if(Store.currentUpgrades[index].baseCost <= Game.currency)
+        {
+            useUpgrade(index);
+
+            Game.currency -= Store.currentUpgrades[index].baseCost;
+            
+            for(;index + 1< Store.currentUpgrades.length; index++)
+            {
+                Store.currentUpgrades[index] = Store.currentUpgrades[index + 1];
+            }
+
+            Store.currentUpgrades.pop();
+
+            refreshUpgrades();
+        }
+    }
+
+    else if(type == 'trophy')
+    {
+        /* TODO: implement trophy case */
     }
 }
 
@@ -733,14 +797,34 @@ function AddProduct(title, imageURL)
 
     var str;
     str = '<div class="product" id='+id+'product'+'><img src='+imageURL+'><h1 class="content">'+title+'</h1>';
-    str += '<span id='+id+'cost'+' class="cost"><img src=\'assets/img/'+Game.theme+'/cash.png\'></span></div>';
+    str += '<img id="cImg" src=\'assets/img/'+Game.theme+'/cash.png\'><span id='+id+'cost'+' class="cost"></span></div>';
     str += NewTooltip(title);
     newDiv.innerHTML = str;
-    newDiv.onclick = function(){ BuyProduct(title); };
+    newDiv.onclick = function(){ BuyProduct(title, 'product'); };
 
     newDiv.onmouseover = function(){ printToolTip(title); };
 
     productBar.appendChild(newDiv);
+}
+
+function refreshUpgrades()
+{
+    get('upgrades').innerHTML = '';
+
+    for(var i = 0; i < Store.currentUpgrades.length; i++)
+    {
+        AddUpgrade(i, 'assets/img/upgrades/'+Store.currentUpgrades[i].UpgradeType+Store.currentUpgrades[i].number+'.png');
+    }
+}
+
+function useUpgrade(index)
+{
+    switch(Store.currentUpgrades[index].UpgradeType)
+    {
+        case 'currency':
+            Game.currency += 1000 * (Store.currentUpgrades[index].number + 1);
+        break;
+    }
 }
 
 function printToolTip(productName)
@@ -754,9 +838,11 @@ function AddUpgrade(title, imageURL)
 
     var newDiv = document.createElement('div');
     newDiv.className='upgrade';
-    newDiv.setAttribute('id',title+'upgrade');
-    str = '<img src='+imageURL+'>';
+    newDiv.setAttribute('id','upgrade'+title);
+    str = '<img src='+imageURL+'><span id=\'upgrade'+title+'ttp\'class="tooltip2"></span>';
     newDiv.innerHTML = str;
+    newDiv.onmouseover = function(){ get('upgrade'+title+'ttp').innerHTML ='Cost:'+Store.currentUpgrades[title].baseCost; };
+    newDiv.onclick = function(){ BuyProduct('upgrade'+title, 'upgrade'); };
 
     upgradeBar.appendChild(newDiv);
 }

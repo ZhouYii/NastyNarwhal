@@ -316,7 +316,7 @@ time, mark, audio, video {
 	padding-left: 10px;
 }
 
-.cost img
+#cImg
 {
 	height:17px;
 	width:17px;
@@ -344,6 +344,23 @@ time, mark, audio, video {
 	cursor:pointer;
 	background-color: gray;
 	background-image:url('../img/upgradeFrame.png');
+}
+
+.tooltip2
+{
+	visibility: hidden;
+}
+
+.upgrade:hover .tooltip2
+{
+	visibility: visible;
+	position: relative;
+	bottom: 90%;
+	right: 10px;
+	opacity: .5;
+	color: red;
+	background-color: black;
+	border: white dotted 2px;
 }
 
 #cookieAnchor

@@ -228,6 +228,28 @@ Game.Construct = function()
                     entry.desc = "Makes it more likely to encounter new targets.";
                     entry.func = attractFunctor(2,5);
                     break;
+                case "items/kill1.png":
+                    entry.name = "Steely Throwing Knives";
+                    entry.desc = "Not homicide if it looks like an accident.";
+                    entry.func = aAssasinate;
+                    break;
+                case "items/luk2.png":
+                case "items/luk1.png":
+                    entry.name = "Luck Permit";
+                    entry.desc = "The law permits you to be more lucky";
+                    entry.func = itemLuckFunctor(3,2);
+                    break;
+                case "items/mon0.png":
+                case "items/mon1.png":
+                case "items/mon2.png":
+                case "items/mon3.png":
+                case "items/mon4.png":
+                case "items/mon5.png":
+                case "items/mon6.png":
+                    entry.name = "Moneybag";
+                    entry.desc = 'You "found" some money...';
+                    entry.func = moneyFunctor(50000,10);
+                    break;
                 case "items/nop1.png":
                 case "items/nop2.png":
                 case "items/nop4.png":

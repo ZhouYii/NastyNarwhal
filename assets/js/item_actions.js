@@ -22,8 +22,12 @@ function aOrbisShip() {
 }
 
 function aAssasinate() {
-    if(Game.currentTarget != null)
-        Game.currentTarget.vitality = 0;
+    console.log("kill");
+    if(Game.currentTarget != null) {
+        Game.currentTarget.swapFunc();
+        gSetCurrTarget("big/basic.png");
+    }
+
 }
 
 /* Functor Suite */
@@ -57,6 +61,7 @@ function vitalsFunctor(base, mult) {
 }
 
 function itemLuckFunctor(base, mult) {
+    console.log("cool");
     return function() {
         Game.itemLuck += base * rand(mult);
     };

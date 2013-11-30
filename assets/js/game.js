@@ -669,7 +669,7 @@ Store.Construct = function()
         case 'maplestory':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(maplestoryProducts[i], 50 + Math.exp(Math.pow(i + 1,1.3)) * 30 , (1 - Math.pow(0.90, i + 1)) );
+                Store.productList[i] = new StoreProduct(maplestoryProducts[i], Math.pow(30, i + 1), (1 - Math.pow(0.90, i + 1)) );
             }
 
             for(var i = 0; i < Store.productList.length; i++)
@@ -683,7 +683,7 @@ Store.Construct = function()
         case 'pokemon':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(pokemonProducts[i], 50 + Math.exp(Math.pow(i + 1,1.3)) * 40, (1 - Math.pow(0.93, i + 1)) );
+                Store.productList[i] = new StoreProduct(pokemonProducts[i], Math.pow(40, i + 1), (1 - Math.pow(0.93, i + 1)) );
             }
 
             for(var i = 0; i < Store.productList.length; i++)

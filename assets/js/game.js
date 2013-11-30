@@ -1,11 +1,11 @@
 var Game = {};
 var Inv = {};
 Inv.Init = function() {
-    Inv.size = 32;
+    Inv.size = 30;
     Inv.numRows = 0;
-    Inv.topImg = "inv_top.png";
-    Inv.rowImg = "inv_row.png";
-    Inv.botImg = "inv_bot.png";
+    Inv.topImg = "inv_top_2.png";
+    Inv.rowImg = "row_box.png";
+    Inv.botImg = "inv_bot_2.png";
     Inv.slotImg = "inv_slot.png";
     Inv.items = [];
 
@@ -29,6 +29,34 @@ Inv.Init = function() {
 };
 Game.Construct = function() 
 {
+  /*calc rare drops then common */
+    Game.commonDrops = ['items/drugs.png',
+                  'items/background.png', //Make it rare
+                  'items/nop1.png',
+                  'items/nop2.png',
+                  'items/nop3.png',
+                  'items/nop4.png',
+                  'items/pot0.png',
+                  'items/pot1.png',
+                  'items/pot2.png',
+                  'items/pot3.png',
+                  'items/pot4.png',
+                  'items/pot5.png',
+                  'items/mon0.png',
+                  'items/mon1.png',
+                  'items/mon2.png',
+                  'items/mon3.png',
+                  'items/mon4.png',
+                  'items/mon5.png',
+                  'items/mon6.png',
+                  'items/kill1.png',
+                  'items/attract1.png',
+                  'items/attract2.png',
+                  'items/attract3.png',
+                  'items/luk1.png',
+                  'items/luk2.png'];
+    Game.allDrops = Game.commonDrops;
+    Game.itemList = gInitItems();
     Game.unlockedBackgrounds = [];
     Game.currentTarget = null;
     Game.baseTarget = "big/basic.png";
@@ -38,15 +66,21 @@ Game.Construct = function()
     Game.fps = 30;
     Game.targetX=0;
     Game.targetY=0;
-    Game.saveName = "theGame";
+    Game.saveName = "2theGame";
     /* Game Variables */
+    Game.itemDropBase = 5;
+    Game.commonDrop = 20;
+    Game.rareDrop = 0;
     Game.currency = 0;
     Game.mouseEarnRate = 1;
     Game.clickEarnings = 0;
     Game.totalEarnings = 0;
     Game.earningsPerSec = 0.0;
     Game.dateStarted = parseInt(new Date().getTime());
-    Game.theme = 'pokemon';
+    Game.theme = "maplestory";
+    /*luck modifiers*/
+    Game.attract = 0;
+    Game.itemLuck = 0;
 
     Game.time = new Date().getTime();
     Game.lastClick = 0;
@@ -78,6 +112,9 @@ Game.Construct = function()
     gMain();
 
     
+    
+};
+
     function gCookieNumbersUpdate()
     {
         for (var i in Game.cookieNumbers)
@@ -144,7 +181,7 @@ Game.Construct = function()
         var targets=['big/opt1.png',
                     'big/opt2.png',
                     'big/opt3.png',
-                    'big/opt4.gif',
+                    'big/opt4.png',
                   'big/basic.png'
                  ];
         for(var i = 0; i < targets.length; i++) {
@@ -156,21 +193,75 @@ Game.Construct = function()
                   'target.png',
                   'shine.png',
                   'storetile.jpg',
-                  'inv_top.png',
-                  'inv_row.png',
-                  'inv_bot.png',
+                  'inv_top_2.png',
+                  'row_box.png',
+                  'inv_bot_2.png',
                   'orbisship.png',
-                  'drugs.png',
                   'inv_slot.png',
                   'background_img.jpg'
                   ];
         pics = pics.concat(targets);
+        pics = pics.concat(Game.commonDrops);
         for(var i = 0 ; i < pics.length; i++) {
             var img = new Image();
             img.src = "assets/img/" + pics[i];
             img.onload = gDrawBackground;
             Game.assets[pics[i]] = img;
         }
+    }
+
+    function gInitItems() {
+        var list = [];
+        for(var i = 0 ; i < Game.allDrops.length; i++) {
+            var entry = {};
+            entry.img = Game.allDrops[i];
+            switch(Game.allDrops[i]) {
+                case "items/drugs.png":
+                    entry.name = "Drugs";
+                    entry.desc = "Take some drugs."
+                    entry.func = aDrug;
+                    break;
+                case "items/attract1.png":
+                case "items/attract2.png":
+                case "items/attract3.png":
+                    entry.name = "Enticing Food";
+                    entry.desc = "Makes it more likely to encounter new targets.";
+                    entry.func = attractFunctor(2,5);
+                    break;
+                case "items/nop1.png":
+                case "items/nop2.png":
+                case "items/nop4.png":
+                case "items/nop3.png":
+                    entry.name = "Scroll of Power"
+                    entry.desc = "Such power."
+                    entry.func = function(){};
+                    break;
+                case "items/pot0.png":
+                    entry.name = "ProlongClicking";
+                    entry.desc = "Restore some of the target's health so you can prolong it's suffering!";
+                    entry.func = vitalsFunctor("10","2");
+                    break;
+                case "items/pot1.png":
+                    entry.name = "ProlongClicking 2.0";
+                    entry.desc = "Restore some of the target's health so you can prolong it's suffering!";
+                    entry.func = vitalsFunctor("25","2");
+                    break;
+                case "items/pot2.png":
+                    entry.name = "ProlongClicking 3.0";
+                    entry.desc = "Restore some of the target's health so you can prolong it's suffering!";
+                    entry.func = vitalsFunctor("30","2");
+                    break;
+                case "items/pot3.png":
+                case "items/pot4.png":
+                case "items/pot5.png":
+                    entry.name = "ProlongClicking 4.0";
+                    entry.desc = "Restore some of the target's health so you can prolong it's suffering!";
+                    entry.func = vitalsFunctor("35","2");
+                    break;
+            }
+            list.push(entry);
+        }
+        return list;
     }
 
     /* Load the assets for the click targets */
@@ -217,7 +308,7 @@ Game.Construct = function()
         }
     }
 
-    function gGetMouseCoords(e)
+function gGetMouseCoords(e)
     {
         var posx=0;
         var posy=0;
@@ -299,9 +390,9 @@ Game.Construct = function()
         var row_img = Game.assets[Inv.rowImg];
         var mid_div = get("inv-body");
         
-        while(Inv.numRows < Inv.size/16) {
+        while(Inv.numRows < Inv.size) {
             var row = document.createElement('img');
-            row.src = "assets/img/inv_row.png";
+            row.src = "assets/img/row_box.png";
             mid_div.appendChild(row);
             Inv.numRows++;
         }
@@ -427,11 +518,14 @@ Game.Construct = function()
     function gGod() {
         var playerLuck = Math.random() * 100;
         /* Drop an item */
-        if(playerLuck > 30) {
-            generate_item("Drugs");
+        if((playerLuck + Game.itemLuck) < (Game.itemDropBase + Game.commonDrop)) {
+            generate_item(rand_elem(Game.commonDrops));
+        } else {
+        /* Drop a rare item */
+            
         }
         /* Switch to new encounter */
-        if(playerLuck > 80 && Game.currentTarget.name == Game.baseTarget) {
+        if((playerLuck+Game.attract) > 90 && Game.currentTarget.name == Game.baseTarget) {
             gRandomEncounter();
         }
         /* Target speaks */
@@ -466,6 +560,10 @@ Game.Construct = function()
             /* Randomly kill off 1-3 vitality */
             Game.currentTarget.vitality -= Math.ceil(3*Math.random());
         }
+
+        /* Decay bonuses */
+        Game.attract *= Math.random();
+        Game.itemLuck *= Math.random();
     }
     function gSetCurrTarget(name) {
         console.log("name:"+name);
@@ -478,6 +576,7 @@ Game.Construct = function()
             }
         }
     }
+
 
     function gCloneTarget(template) {
         if(template == null)
@@ -497,7 +596,7 @@ Game.Construct = function()
         /* Calculate base and mul based on purchased stuff */
         Game.recalculateEarnRate = 0;
     }
-};
+
 
 function StoreProduct(name, baseCost, probability)
 {

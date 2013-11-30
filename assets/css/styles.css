@@ -374,15 +374,14 @@ time, mark, audio, video {
 
 #inv-anchor
 {
-        margin-left: 4%;
-        margin-right: 0px;
-        width:603px;
+        margin: 0 auto;
+        width:405px;
 }
 
 #inv-slots 
 {
         top: 0;
-        left: 5;
+        left: 2;
         position:absolute;
 }
 

@@ -516,6 +516,12 @@ function gGetMouseCoords(e)
                 AddUpgrade(Store.currentUpgrades.length, 'assets/img/upgrades/'+parts[0]+Number(parts[1])+'.png');
                 Store.currentUpgrades.push(newUpgrade);
             }
+            var p6 = str[6].split(',');
+            {
+                Store.inventoryCount = Number(p6[0]);
+                Store.backgroundCount = Number(p6[1]);
+                Store.themeCount = Number(p6[2]);
+            }
         }
     }
 
@@ -560,6 +566,9 @@ function gGetMouseCoords(e)
         {
             str+= Store.currentUpgrades[i].UpgradeType+','+Store.currentUpgrades[i].number+','+Store.currentUpgrades[i].baseCost+';';
         }
+        str += '|';
+        /* Store some store data */
+        str += Store.inventoryCount+','+Store.backgroundCount+','+Store.themeCount;
 
         //console.log("Save:"+str);
         /* Encode String */

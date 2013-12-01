@@ -103,10 +103,11 @@ Game.Construct = function()
     unlockBackground("background_img.jpg");
     Game.currentBg = backgroundUnlocked("background_img.jpg");
     gLoadAssets();
+    Store.Construct();
     gLoad();
+    Store.destroyAndRebuild();
     /* Set listeners for the click target */
     gInitClickTarget();
-    Store.Construct();
     if(Game.currentTarget==null)
         gSetCurrTarget(Game.baseTarget);
     gMain();
@@ -499,6 +500,22 @@ function gGetMouseCoords(e)
             for(var i = 0 ; i < p3.length; i++) {
                 unlockBackground(p3[i]);
             }
+
+            Game.theme = str[3];
+
+            var p4 = str[4].split(';');
+            for(var i = 0; i < p4.length - 1; i++)
+            {
+                Store.boughtProducts[i] = Number(p4[i]);
+            }
+            var p5 = str[5].split(';');
+            for(var i = 0; i < p5.length - 1; i++)
+            {
+                var parts = p5[i].split(',');
+                var newUpgrade = new StoreUpgrade(parts[0], parts[1], parts[2]);
+                AddUpgrade(Store.currentUpgrades.length, 'assets/img/upgrades/'+parts[0]+Number(parts[1])+'.png');
+                Store.currentUpgrades.push(newUpgrade);
+            }
         }
     }
 
@@ -528,6 +545,22 @@ function gGetMouseCoords(e)
         for(var i = 0 ; i < Game.unlockedBackgrounds.length; i++) {
             str += Game.unlockedBackgrounds[i].name + ";";
         }
+        str += '|';
+        /* Save the current theme */
+        str += Game.theme + '|';
+
+        /* Save all the products that were bought */
+        for(var i = 0; i < Store.boughtProducts.length; i++)
+        {
+            str+= Store.boughtProducts[i] + ';';
+        }
+        str += '|';
+        /* Save all of the current upgrades */
+        for(var i = 0; i < Store.currentUpgrades.length; i++)
+        {
+            str+= Store.currentUpgrades[i].UpgradeType+','+Store.currentUpgrades[i].number+','+Store.currentUpgrades[i].baseCost+';';
+        }
+
         //console.log("Save:"+str);
         /* Encode String */
         str=utf8_to_b64(str)+'!END!';
@@ -648,14 +681,10 @@ Store.Construct = function()
 {
     if(Store.rebuild == undefined)
     {
+        Store.boughtProducts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         Store.inventoryCount = 0;
         Store.backgroundCount = 0;
         Store.themeCount = 0;
-        Store.productList = [];
-        Store.upgradeList = [new StoreUpgrade('currency', 0, 0),
-                             new StoreUpgrade('theme', 0, 1000000),
-                             new StoreUpgrade('background', 0, 100000),
-                             new StoreUpgrade('inventory', 0, 200000)];
         Store.currentUpgrades = [];
         Store.rebuild = true;
     }
@@ -666,6 +695,11 @@ Store.Construct = function()
         Store.Construct();
     }
 
+    Store.productList = [];
+    Store.upgradeList = [new StoreUpgrade('currency', 0, 0),
+                         new StoreUpgrade('theme', 0, 1000000),
+                         new StoreUpgrade('background', 0, 100000),
+                         new StoreUpgrade('inventory', 0, 200000)];
     var folder = 'assets/img/'+Game.theme+'/';
 
     switch(Game.theme)
@@ -673,7 +707,8 @@ Store.Construct = function()
         case 'maplestory':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(maplestoryProducts[i], Math.pow(30, i + 1), (1 - Math.pow(0.90, i + 1)) );
+                Store.productList[i] = new StoreProduct(maplestoryProducts[i], Math.pow(30, i + 1) * Math.pow(1.5, Store.boughtProducts[i]),
+                 (1 - Math.pow(0.90, i + 1)) );
             }
 
             for(var i = 0; i < Store.productList.length; i++)
@@ -687,7 +722,8 @@ Store.Construct = function()
         case 'pokemon':
             for(var i = 0; i < 10; i++)
             {
-                Store.productList[i] = new StoreProduct(pokemonProducts[i], Math.pow(40, i + 1), (1 - Math.pow(0.93, i + 1)) );
+                Store.productList[i] = new StoreProduct(pokemonProducts[i], Math.pow(40, i + 1) * Math.pow(1.5, Store.boughtProducts[i]),
+                 (1 - Math.pow(0.93, i + 1)) );
             }
 
             for(var i = 0; i < Store.productList.length; i++)
@@ -778,6 +814,7 @@ function BuyProduct(productName, type)
 
         if(Store.productList[index].active && Store.productList[index].baseCost <= Game.currency)
         {
+            Store.boughtProducts[index]++;
             Game.earningsPerSec += Math.ceil(((Math.pow(index + 1, 5) * .05)) + 1);
             Game.currency -= Store.productList[index].baseCost;
             Store.productList[index].baseCost *= 1.5;
@@ -863,7 +900,7 @@ function useUpgrade(index)
             {
                 Game.theme = 'pokemon';
             }
-
+            Store.themeCount = 0;
             Store.destroyAndRebuild();
         break;
 
@@ -873,7 +910,7 @@ function useUpgrade(index)
         break;
 
         case 'inventory':
-            cosole.log('Increse inventory size by'+ (index+1));
+            console.log('Increse inventory size by'+ (index+1));
             Store.inventoryCount = 0;
         break;
     }
